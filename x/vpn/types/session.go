@@ -2,7 +2,8 @@ package types
 
 import (
 	"fmt"
-	
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -30,6 +31,21 @@ func (s Session) IsValid() error {
 	if s.Status != StatusRegistered && s.Status != StatusDeRegistered {
 		return fmt.Errorf("invalid status")
 	}
-	
+
 	return nil
+}
+
+type FreeSessionBandwidth struct {
+	NodeID      hub.NodeID     `json:"node_id"`
+	NodeAddress sdk.AccAddress `json:"node_address"`
+	ClientID    string         `json:"client_id"`
+	Bandwidth   hub.Bandwidth  `json:"bandwidth"`
+}
+
+func (s FreeSessionBandwidth) String() string {
+	return fmt.Sprintf(`
+NodeID: %s
+NodeAddress: %s
+ClientID:%s
+Bandwidth:%s`, s.NodeID.String(), s.NodeAddress.String(), s.ClientID, s.Bandwidth.String())
 }

@@ -111,3 +111,61 @@ func NewMsgEndSession(from sdk.AccAddress, subscriptionID hub.SubscriptionID) *M
 		SubscriptionID: subscriptionID,
 	}
 }
+
+var _ sdk.Msg = (*MsgUpdateFreeSessionBandwidth)(nil)
+
+func NewMsgUpdateFreeSessionBandwidth(from sdk.AccAddress, client string, bandwidth hub.Bandwidth) MsgUpdateFreeSessionBandwidth {
+	return MsgUpdateFreeSessionBandwidth{
+		From:      from,
+		ClientID:  client,
+		BandWidth: bandwidth,
+	}
+}
+
+type MsgUpdateFreeSessionBandwidth struct {
+	From      sdk.AccAddress `json:"from"`
+	NodeID    hub.NodeID     `json:"node_id"`
+	ClientID  string         `json:"client_id"`
+	BandWidth hub.Bandwidth  `json:"band_width"`
+}
+
+func (msg MsgUpdateFreeSessionBandwidth) Route() string {
+	return RouterKey
+}
+
+func (msg MsgUpdateFreeSessionBandwidth) Type() string {
+	return "update_free_session_bandwidth"
+}
+
+func (msg MsgUpdateFreeSessionBandwidth) ValidateBasic() sdk.Error {
+	if msg.From == nil || msg.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+
+	if msg.ClientID == "" {
+		return ErrorInvalidField("client_id")
+	}
+
+	if msg.NodeID == nil {
+		return ErrorInvalidField("node_id")
+	}
+
+	if msg.BandWidth.AnyNil() || !msg.BandWidth.AllPositive() {
+		return ErrorInvalidField("band_width")
+	}
+
+	return nil
+}
+
+func (msg MsgUpdateFreeSessionBandwidth) GetSignBytes() []byte {
+	bz, err := json.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
+
+	return bz
+}
+
+func (msg MsgUpdateFreeSessionBandwidth) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.From}
+}
