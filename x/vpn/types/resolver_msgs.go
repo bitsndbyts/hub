@@ -2,9 +2,9 @@ package types
 
 import (
 	"encoding/json"
-	
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	
+
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -21,14 +21,14 @@ func (msg MsgRegisterResolver) Type() string {
 	return "register_resolver"
 }
 
-func (msg MsgRegisterResolver) ValidateBasic() sdk.Error {
+func (msg MsgRegisterResolver) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
 	if msg.Commission.LT(sdk.ZeroDec()) || msg.Commission.GT(sdk.OneDec()) {
 		return ErrorInvalidField("commission")
 	}
-	
+
 	return nil
 }
 
@@ -66,15 +66,15 @@ func (msg MsgUpdateResolverInfo) Type() string {
 	return "update_resolver_info"
 }
 
-func (msg MsgUpdateResolverInfo) ValidateBasic() sdk.Error {
+func (msg MsgUpdateResolverInfo) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	
+
 	if msg.Commission.LT(sdk.ZeroDec()) || msg.Commission.GT(sdk.OneDec()) {
 		return ErrorInvalidField("commission")
 	}
-	
+
 	return nil
 }
 
@@ -83,7 +83,7 @@ func (msg MsgUpdateResolverInfo) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return bz
 }
 
@@ -114,11 +114,11 @@ func (msg MsgDeregisterResolver) Type() string {
 	return "deregister_resolver"
 }
 
-func (msg MsgDeregisterResolver) ValidateBasic() sdk.Error {
+func (msg MsgDeregisterResolver) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	
+
 	return nil
 }
 
@@ -127,7 +127,7 @@ func (msg MsgDeregisterResolver) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return bz
 }
 

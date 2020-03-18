@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	Codespace             = types.Codespace
 	ModuleName            = types.ModuleName
 	StoreKey              = types.StoreKey
 	RouterKey             = types.RouterKey
@@ -34,7 +33,7 @@ var (
 	NewQueryDepositOfAddressParams = types.NewQueryDepositOfAddressParams
 	NewKeeper                      = keeper.NewKeeper
 	NewQuerier                     = querier.NewQuerier
-	
+
 	// variable aliases
 	ModuleCdc        = types.ModuleCdc
 	DepositKeyPrefix = types.DepositKeyPrefix

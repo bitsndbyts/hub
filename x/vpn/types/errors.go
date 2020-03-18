@@ -1,14 +1,12 @@
 package types
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	hub "github.com/sentinel-official/hub/types"
 )
 
 const (
-	Codespace = sdk.CodespaceType("vpn")
-	
 	errCodeUnknownMsgType            = 101
 	errCodeUnknownQueryType          = 102
 	errCodeInvalidField              = 103
@@ -27,7 +25,7 @@ const (
 	errCodeResolverDoesNotExist      = 122
 	errCodeInvalidResolverStatus     = 123
 	errCodeFreeClientDoesNotExist    = 115
-	
+
 	errMsgUnknownMsgType            = "Unknown message type: "
 	errMsgUnknownQueryType          = "Invalid query type: "
 	errMsgInvalidField              = "Invalid field: "
@@ -48,82 +46,82 @@ const (
 	errMsgFreeClientDoesNotExist    = "Free client does not exist"
 )
 
-func ErrorMarshal() sdk.Error {
-	return sdk.NewError(Codespace, hub.ErrCodeMarshal, hub.ErrMsgMarshal)
+func ErrorMarshal() error {
+	return sdkerrors.Register(ModuleName, hub.ErrCodeMarshal, hub.ErrMsgMarshal)
 }
 
-func ErrorUnmarshal() sdk.Error {
-	return sdk.NewError(Codespace, hub.ErrCodeUnmarshal, hub.ErrMsgUnmarshal)
+func ErrorUnmarshal() error {
+	return sdkerrors.Register(ModuleName, hub.ErrCodeUnmarshal, hub.ErrMsgUnmarshal)
 }
 
-func ErrorUnknownMsgType(msgType string) sdk.Error {
-	return sdk.NewError(Codespace, errCodeUnknownMsgType, errMsgUnknownMsgType+msgType)
+func ErrorUnknownMsgType(msgType string) error {
+	return sdkerrors.Register(ModuleName, errCodeUnknownMsgType, errMsgUnknownMsgType+msgType)
 }
 
-func ErrorInvalidQueryType(queryType string) sdk.Error {
-	return sdk.NewError(Codespace, errCodeUnknownQueryType, errMsgUnknownQueryType+queryType)
+func ErrorInvalidQueryType(queryType string) error {
+	return sdkerrors.Register(ModuleName, errCodeUnknownQueryType, errMsgUnknownQueryType+queryType)
 }
 
-func ErrorInvalidField(field string) sdk.Error {
-	return sdk.NewError(Codespace, errCodeInvalidField, errMsgInvalidField+field)
+func ErrorInvalidField(field string) error {
+	return sdkerrors.Register(ModuleName, errCodeInvalidField, errMsgInvalidField+field)
 }
 
-func ErrorUnauthorized() sdk.Error {
-	return sdk.NewError(Codespace, errCodeUnauthorized, errMsgUnauthorized)
+func ErrorUnauthorized() error {
+	return sdkerrors.Register(ModuleName, errCodeUnauthorized, errMsgUnauthorized)
 }
 
-func ErrorNodeDoesNotExist() sdk.Error {
-	return sdk.NewError(Codespace, errCodeNodeDoesNotExist, errMsgNodeDoesNotExist)
+func ErrorNodeDoesNotExist() error {
+	return sdkerrors.Register(ModuleName, errCodeNodeDoesNotExist, errMsgNodeDoesNotExist)
 }
 
-func ErrorInvalidNodeStatus() sdk.Error {
-	return sdk.NewError(Codespace, errCodeInvalidNodeStatus, errMsgInvalidNodeStatus)
+func ErrorInvalidNodeStatus() error {
+	return sdkerrors.Register(ModuleName, errCodeInvalidNodeStatus, errMsgInvalidNodeStatus)
 }
 
-func ErrorInvalidDeposit() sdk.Error {
-	return sdk.NewError(Codespace, errCodeInvalidDeposit, errMsgInvalidDeposit)
+func ErrorInvalidDeposit() error {
+	return sdkerrors.Register(ModuleName, errCodeInvalidDeposit, errMsgInvalidDeposit)
 }
 
-func ErrorSubscriptionDoesNotExist() sdk.Error {
-	return sdk.NewError(Codespace, errCodeSubscriptionDoesNotExist, errMsgSubscriptionDoesNotExist)
+func ErrorSubscriptionDoesNotExist() error {
+	return sdkerrors.Register(ModuleName, errCodeSubscriptionDoesNotExist, errMsgSubscriptionDoesNotExist)
 }
 
-func ErrorSubscriptionAlreadyExists() sdk.Error {
-	return sdk.NewError(Codespace, errCodeSubscriptionAlreadyExists, errMsgSubscriptionAlreadyExists)
+func ErrorSubscriptionAlreadyExists() error {
+	return sdkerrors.Register(ModuleName, errCodeSubscriptionAlreadyExists, errMsgSubscriptionAlreadyExists)
 }
 
-func ErrorInvalidSubscriptionStatus() sdk.Error {
-	return sdk.NewError(Codespace, errCodeInvalidSubscriptionStatus, errMsgInvalidSubscriptionStatus)
+func ErrorInvalidSubscriptionStatus() error {
+	return sdkerrors.Register(ModuleName, errCodeInvalidSubscriptionStatus, errMsgInvalidSubscriptionStatus)
 }
 
-func ErrorInvalidBandwidth() sdk.Error {
-	return sdk.NewError(Codespace, errCodeInvalidBandwidth, errMsgInvalidBandwidth)
+func ErrorInvalidBandwidth() error {
+	return sdkerrors.Register(ModuleName, errCodeInvalidBandwidth, errMsgInvalidBandwidth)
 }
 
-func ErrorInvalidBandwidthSignature() sdk.Error {
-	return sdk.NewError(Codespace, errCodeInvalidBandwidthSignature, errMsgInvalidBandwidthSignature)
+func ErrorInvalidBandwidthSignature() error {
+	return sdkerrors.Register(ModuleName, errCodeInvalidBandwidthSignature, errMsgInvalidBandwidthSignature)
 }
 
-func ErrorSessionAlreadyExists() sdk.Error {
-	return sdk.NewError(Codespace, errCodeSessionAlreadyExists, errMsgSessionAlreadyExists)
+func ErrorSessionAlreadyExists() error {
+	return sdkerrors.Register(ModuleName, errCodeSessionAlreadyExists, errMsgSessionAlreadyExists)
 }
 
-func ErrorInvalidSessionStatus() sdk.Error {
-	return sdk.NewError(Codespace, errCodeInvalidSessionStatus, errMsgInvalidSessionStatus)
+func ErrorInvalidSessionStatus() error {
+	return sdkerrors.Register(ModuleName, errCodeInvalidSessionStatus, errMsgInvalidSessionStatus)
 }
 
-func ErrorResolverAlreadyExist() sdk.Error {
-	return sdk.NewError(Codespace, errCodeResolverAlreadyExist, errMsgResolverAlreadyExist)
+func ErrorResolverAlreadyExist() error {
+	return sdkerrors.Register(ModuleName, errCodeResolverAlreadyExist, errMsgResolverAlreadyExist)
 }
 
-func ErrorResolverDoesNotExist() sdk.Error {
-	return sdk.NewError(Codespace, errCodeResolverDoesNotExist, errMsgResolverDoesNotExist)
+func ErrorResolverDoesNotExist() error {
+	return sdkerrors.Register(ModuleName, errCodeResolverDoesNotExist, errMsgResolverDoesNotExist)
 }
 
-func ErrorInvalidResolverStatus() sdk.Error {
-	return sdk.NewError(Codespace, errCodeInvalidResolverStatus, errMsgInvalidResolverStatus)
+func ErrorInvalidResolverStatus() error {
+	return sdkerrors.Register(ModuleName, errCodeInvalidResolverStatus, errMsgInvalidResolverStatus)
 }
 
-func ErrorFreeClientDoesNotExist() sdk.Error {
-	return sdk.NewError(Codespace, errCodeFreeClientDoesNotExist, errMsgFreeClientDoesNotExist)
+func ErrorFreeClientDoesNotExist() error {
+	return sdkerrors.Register(ModuleName, errCodeFreeClientDoesNotExist, errMsgFreeClientDoesNotExist)
 }

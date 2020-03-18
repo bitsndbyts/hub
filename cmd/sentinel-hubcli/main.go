@@ -3,8 +3,12 @@ package main
 import (
 	"os"
 	"path"
-	
+
+	_amino "github.com/tendermint/go-amino"
+	"github.com/tendermint/tendermint/libs/cli"
+
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
@@ -14,11 +18,10 @@ import (
 	authRest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankCli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	_amino "github.com/tendermint/go-amino"
-	"github.com/tendermint/tendermint/libs/cli"
-	
+
 	"github.com/sentinel-official/hub/app"
 	"github.com/sentinel-official/hub/simapp"
 	"github.com/sentinel-official/hub/version"
@@ -26,36 +29,36 @@ import (
 
 func main() {
 	cdc := app.MakeCodec()
-	
+
 	config := sdk.GetConfig()
 	simapp.SetBech32AddressPrefixes(config)
 	config.Seal()
-	
+
 	cobra.EnableCommandSorting = false
 	rootCmd := &cobra.Command{
 		Use:   "sentinel-hubcli",
 		Short: "Sentinel Hub light-client",
 	}
-	
-	rootCmd.PersistentFlags().String(client.FlagChainID, "", "Chain ID of tendermint node")
+
+	rootCmd.PersistentFlags().String(flags.FlagChainID, "", "Chain ID of tendermint node")
 	rootCmd.PersistentPreRunE = func(_ *cobra.Command, _ []string) error {
 		return initConfig(rootCmd)
 	}
-	
+
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
 		client.ConfigCmd(app.DefaultCLIHome),
 		queryCmd(cdc),
 		txCmd(cdc),
-		client.LineBreak,
+		flags.LineBreak,
 		lcd.ServeCommand(cdc, registerRoutes),
-		client.LineBreak,
+		flags.LineBreak,
 		keys.Commands(),
-		client.LineBreak,
+		flags.LineBreak,
 		version.Cmd,
-		client.NewCompletionCmd(rootCmd, true),
+		flags.NewCompletionCmd(rootCmd, true),
 	)
-	
+
 	executor := cli.PrepareMainCmd(rootCmd, "HUB", app.DefaultCLIHome)
 	if err := executor.Execute(); err != nil {
 		panic(err)
@@ -68,17 +71,17 @@ func queryCmd(cdc *_amino.Codec) *cobra.Command {
 		Aliases: []string{"q"},
 		Short:   "Querying subcommands",
 	}
-	
+
 	cmd.AddCommand(
 		authCli.GetAccountCmd(cdc),
-		client.LineBreak,
+		flags.LineBreak,
 		rpc.ValidatorCommand(cdc),
 		rpc.BlockCommand(),
 		authCli.QueryTxsByEventsCmd(cdc),
 		authCli.QueryTxCmd(cdc),
-		client.LineBreak,
+		flags.LineBreak,
 	)
-	
+
 	app.ModuleBasics.AddQueryCommands(cmd, cdc)
 	return cmd
 }
@@ -88,27 +91,27 @@ func txCmd(cdc *_amino.Codec) *cobra.Command {
 		Use:   "tx",
 		Short: "Transactions subcommands",
 	}
-	
+
 	cmd.AddCommand(
 		bankCli.SendTxCmd(cdc),
-		client.LineBreak,
+		flags.LineBreak,
 		authCli.GetSignCommand(cdc),
 		authCli.GetMultiSignCommand(cdc),
-		client.LineBreak,
+		flags.LineBreak,
 		authCli.GetBroadcastCommand(cdc),
 		authCli.GetEncodeCommand(cdc),
-		client.LineBreak,
+		flags.LineBreak,
 	)
-	
+
 	app.ModuleBasics.AddTxCommands(cmd, cdc)
-	
+
 	var cmdsToRemove []*cobra.Command
 	for _, cmd := range cmd.Commands() {
 		if cmd.Use == auth.ModuleName || cmd.Use == bank.ModuleName {
 			cmdsToRemove = append(cmdsToRemove, cmd)
 		}
 	}
-	
+
 	cmd.RemoveCommand(cmdsToRemove...)
 	return cmd
 }
@@ -124,21 +127,21 @@ func initConfig(cmd *cobra.Command) error {
 	if err != nil {
 		return err
 	}
-	
+
 	cfgFile := path.Join(home, "config", "config.toml")
 	if _, err := os.Stat(cfgFile); err == nil {
 		viper.SetConfigFile(cfgFile)
-		
+
 		if err := viper.ReadInConfig(); err != nil {
 			return err
 		}
 	}
-	if err := viper.BindPFlag(client.FlagChainID, cmd.PersistentFlags().Lookup(client.FlagChainID)); err != nil {
+	if err := viper.BindPFlag(flags.FlagChainID, cmd.PersistentFlags().Lookup(flags.FlagChainID)); err != nil {
 		return err
 	}
 	if err := viper.BindPFlag(cli.EncodingFlag, cmd.PersistentFlags().Lookup(cli.EncodingFlag)); err != nil {
 		return err
 	}
-	
+
 	return viper.BindPFlag(cli.OutputFlag, cmd.PersistentFlags().Lookup(cli.OutputFlag))
 }

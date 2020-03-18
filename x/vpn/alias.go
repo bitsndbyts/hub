@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	Codespace                        = types.Codespace
 	ModuleName                       = types.ModuleName
 	QuerierRoute                     = types.QuerierRoute
 	RouterKey                        = types.RouterKey

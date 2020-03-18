@@ -2,15 +2,17 @@ package vpn
 
 import (
 	"encoding/json"
-	
+
+	"github.com/gorilla/mux"
+	"github.com/spf13/cobra"
+
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/gorilla/mux"
-	"github.com/spf13/cobra"
+
 	abci "github.com/tendermint/tendermint/abci/types"
-	
+
 	"github.com/sentinel-official/hub/x/vpn/client/cli"
 	"github.com/sentinel-official/hub/x/vpn/client/rest"
 )
@@ -39,7 +41,7 @@ func (a AppModuleBasic) ValidateGenesis(data json.RawMessage) error {
 	if err := ModuleCdc.UnmarshalJSON(data, &state); err != nil {
 		return err
 	}
-	
+
 	return ValidateGenesis(state)
 }
 
@@ -70,7 +72,7 @@ func (a AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.Val
 	var state GenesisState
 	ModuleCdc.MustUnmarshalJSON(data, &state)
 	InitGenesis(ctx, a.keeper, state)
-	
+
 	return nil
 }
 

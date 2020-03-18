@@ -3,13 +3,13 @@ package querier
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	
+
 	"github.com/sentinel-official/hub/x/vpn/keeper"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func NewQuerier(k keeper.Keeper) sdk.Querier {
-	return func(ctx sdk.Context, path []string, req abci.RequestQuery) ([]byte, sdk.Error) {
+	return func(ctx sdk.Context, path []string, req abci.RequestQuery) ([]byte, error) {
 		switch path[0] {
 		case types.QueryNode:
 			return queryNode(ctx, req, k)
@@ -47,7 +47,7 @@ func NewQuerier(k keeper.Keeper) sdk.Querier {
 			return queryParameters(ctx, k)
 		case types.QueryResolvers:
 			return queryResolvers(ctx, req, k)
-		
+
 		default:
 			return nil, types.ErrorInvalidQueryType(path[0])
 		}

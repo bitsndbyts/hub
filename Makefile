@@ -33,7 +33,7 @@ install: dep_verify
 	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinel-hubcli
 
 test:
-	@go test -mod=readonly -cover ${PACKAGES}
+	@go test -cover ${PACKAGES}
 
 SIM_NUM_BLOCKS ?= 500
 SIM_BLOCK_SIZE ?= 100

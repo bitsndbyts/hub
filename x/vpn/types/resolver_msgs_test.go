@@ -41,7 +41,7 @@ func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  MsgRegisterResolver
-		want sdk.Error
+		want error
 	}{
 		{
 			"from is nil",
@@ -108,7 +108,7 @@ func TestMsgUpdateResolverInfo_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  MsgUpdateResolverInfo
-		want sdk.Error
+		want error
 	}{
 		{
 			"from is nil",
@@ -178,7 +178,7 @@ func TestMsgDeregisterResolver_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  MsgDeregisterResolver
-		want sdk.Error
+		want error
 	}{
 		{
 			"from is nil",

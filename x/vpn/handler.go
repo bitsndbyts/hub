@@ -12,7 +12,7 @@ import (
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {
-	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
+	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
@@ -46,7 +46,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return handleDeregisterResolver(ctx, k, msg)
 
 		default:
-			return types.ErrorUnknownMsgType(reflect.TypeOf(msg).Name()).Result()
+			return nil, types.ErrorUnknownMsgType(reflect.TypeOf(msg).Name())
 		}
 	}
 }
@@ -113,7 +113,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) {
 	k.DeleteActiveSessionIDs(ctx, _height)
 }
 
-func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterNode) sdk.Result {
+func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterNode) (*sdk.Result, error) {
 	nc := k.GetNodesCount(ctx)
 	node := types.Node{
 		ID:               hub.NewNodeID(nc),
@@ -134,7 +134,7 @@ func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 		node.Deposit = k.Deposit(ctx)
 
 		if err := k.AddDeposit(ctx, node.Owner, node.Deposit); err != nil {
-			return err.Result()
+			return nil, err
 		}
 	}
 
@@ -153,19 +153,19 @@ func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 		),
 	)
 
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func handleUpdateNodeInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNodeInfo) sdk.Result {
+func handleUpdateNodeInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNodeInfo) (*sdk.Result, error) {
 	node, found := k.GetNode(ctx, msg.ID)
 	if !found {
-		return types.ErrorNodeDoesNotExist().Result()
+		return nil, types.ErrorNodeDoesNotExist()
 	}
 	if !msg.From.Equals(node.Owner) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized()
 	}
 	if node.Status == types.StatusDeRegistered {
-		return types.ErrorInvalidNodeStatus().Result()
+		return nil, types.ErrorInvalidNodeStatus()
 	}
 
 	_node := types.Node{
@@ -188,20 +188,20 @@ func handleUpdateNodeInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateN
 		),
 	)
 
-	return sdk.Result{Events: ctx.EventManager().Events(),
-		Data: types.ModuleCdc.MustMarshalJSON(node)}
+	return &sdk.Result{Events: ctx.EventManager().Events(),
+		Data: types.ModuleCdc.MustMarshalJSON(node)}, nil
 }
 
-func handleAddFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddFreeClient) sdk.Result {
+func handleAddFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddFreeClient) (*sdk.Result, error) {
 	node, found := k.GetNode(ctx, msg.NodeID)
 	if !found {
-		return types.ErrorNodeDoesNotExist().Result()
+		return nil, types.ErrorNodeDoesNotExist()
 	}
 	if !msg.From.Equals(node.Owner) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized()
 	}
 	if node.Status == types.StatusDeRegistered {
-		return types.ErrorInvalidNodeStatus().Result()
+		return nil, types.ErrorInvalidNodeStatus()
 	}
 
 	k.SetFreeNodeOfClient(ctx, msg.Client, msg.NodeID)
@@ -221,24 +221,24 @@ func handleAddFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddFreeC
 			sdk.NewAttribute(AttributeKeyFromAddress, msg.Client.String()),
 		),
 	)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func handleRemoveFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveFreeClient) sdk.Result {
+func handleRemoveFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveFreeClient) (*sdk.Result, error) {
 	node, found := k.GetNode(ctx, msg.NodeID)
 	if !found {
-		return types.ErrorNodeDoesNotExist().Result()
+		return nil, types.ErrorNodeDoesNotExist()
 	}
 	if !msg.From.Equals(node.Owner) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized()
 	}
 	if node.Status == types.StatusDeRegistered {
-		return types.ErrorInvalidNodeStatus().Result()
+		return nil, types.ErrorInvalidNodeStatus()
 	}
 
 	_, found = k.GetFreeClientOfNode(ctx, msg.NodeID, msg.Client)
 	if !found {
-		return types.ErrorFreeClientDoesNotExist().Result()
+		return nil, types.ErrorFreeClientDoesNotExist()
 	}
 
 	k.RemoveFreeClientOfNode(ctx, msg.NodeID, msg.Client)
@@ -252,27 +252,27 @@ func handleRemoveFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemov
 			sdk.NewAttribute(AttributeKeyFromAddress, msg.From.String()),
 		), )
 
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func handleRegisterVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterVPNOnResolver) sdk.Result {
+func handleRegisterVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterVPNOnResolver) (*sdk.Result, error) {
 	node, found := k.GetNode(ctx, msg.NodeID)
 	if !found {
-		return types.ErrorNodeDoesNotExist().Result()
+		return nil, types.ErrorNodeDoesNotExist()
 	}
 	if !msg.From.Equals(node.Owner) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized()
 	}
 	if node.Status == types.StatusDeRegistered {
-		return types.ErrorInvalidNodeStatus().Result()
+		return nil, types.ErrorInvalidNodeStatus()
 	}
 
 	resolver, found := k.GetResolver(ctx, msg.ResolverID)
 	if !found {
-		return types.ErrorResolverDoesNotExist().Result()
+		return nil, types.ErrorResolverDoesNotExist()
 	}
 	if resolver.Status == types.StatusDeRegistered {
-		return types.ErrorInvalidResolverStatus().Result()
+		return nil, types.ErrorInvalidResolverStatus()
 	}
 
 	k.SetResolverOfNode(ctx, node.ID, resolver.ID)
@@ -287,24 +287,24 @@ func handleRegisterVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.Msg
 		),
 	)
 
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func handleDeregisterVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterVPNOnResolver) sdk.Result {
+func handleDeregisterVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterVPNOnResolver) (*sdk.Result, error) {
 	node, found := k.GetNode(ctx, msg.NodeID)
 	if !found {
-		return types.ErrorNodeDoesNotExist().Result()
+		return nil, types.ErrorNodeDoesNotExist()
 	}
 	if !msg.From.Equals(node.Owner) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized()
 	}
 	if node.Status == types.StatusDeRegistered {
-		return types.ErrorInvalidNodeStatus().Result()
+		return nil, types.ErrorInvalidNodeStatus()
 	}
 
 	resolver, found := k.GetResolverOfNode(ctx, msg.NodeID, msg.ResolverID)
 	if !found {
-		return types.ErrorResolverDoesNotExist().Result()
+		return nil, types.ErrorResolverDoesNotExist()
 	}
 
 	k.RemoveVPNNodeOnResolver(ctx, msg.NodeID, resolver)
@@ -318,24 +318,24 @@ func handleDeregisterVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.M
 		),
 	)
 
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func handleDeregisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterNode) sdk.Result {
+func handleDeregisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterNode) (*sdk.Result, error) {
 	node, found := k.GetNode(ctx, msg.ID)
 	if !found {
-		return types.ErrorNodeDoesNotExist().Result()
+		return nil, types.ErrorNodeDoesNotExist()
 	}
 	if !msg.From.Equals(node.Owner) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized()
 	}
 	if node.Status == types.StatusDeRegistered {
-		return types.ErrorInvalidNodeStatus().Result()
+		return nil, types.ErrorInvalidNodeStatus()
 	}
 
 	if node.Deposit.IsPositive() {
 		if err := k.SubtractDeposit(ctx, node.Owner, node.Deposit); err != nil {
-			return err.Result()
+			return nil, err
 		}
 	}
 
@@ -352,34 +352,35 @@ func handleDeregisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregis
 			sdk.NewAttribute(AttributeKeyNodeID, msg.ID.String()),
 		), )
 
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+
 }
 
 // nolint:funlen
-func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartSubscription) sdk.Result {
+func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartSubscription) (*sdk.Result, error) {
 	node, found := k.GetNode(ctx, msg.NodeID)
 	if !found {
-		return types.ErrorNodeDoesNotExist().Result()
+		return nil, types.ErrorNodeDoesNotExist()
 	}
 	if node.Status != types.StatusRegistered {
-		return types.ErrorInvalidNodeStatus().Result()
+		return nil, types.ErrorInvalidNodeStatus()
 	}
 
 	_, found = k.GetResolverOfNode(ctx, msg.NodeID, msg.ResolverID)
 	if !found {
-		return types.ErrorResolverDoesNotExist().Result()
+		return nil, types.ErrorResolverDoesNotExist()
 	}
 
 	freeClients := k.GetFreeClientsOfNode(ctx, msg.NodeID)
 	if !types.IsFreeClient(freeClients, msg.From) {
 		if err := k.AddDeposit(ctx, msg.From, msg.Deposit); err != nil {
-			return err.Result()
+			return nil, err
 		}
 	}
 
 	bandwidth, err := node.DepositToBandwidth(msg.Deposit)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 	pricePerGB := node.FindPricePerGB(msg.Deposit.Denom)
 
@@ -418,33 +419,33 @@ func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 			sdk.NewAttribute(AttributeKeyDeposit, msg.Deposit.String()),
 		),
 	)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func handleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSubscription) sdk.Result {
+func handleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSubscription) (*sdk.Result, error) {
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
-		return types.ErrorSubscriptionDoesNotExist().Result()
+		return nil, types.ErrorSubscriptionDoesNotExist()
 	}
 	if !msg.From.Equals(subscription.Client) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized()
 	}
 	if subscription.Status != types.StatusActive {
-		return types.ErrorInvalidSubscriptionStatus().Result()
+		return nil, types.ErrorInvalidSubscriptionStatus()
 	}
 
 	scs := k.GetSessionsCountOfSubscription(ctx, subscription.ID)
 
 	_, found = k.GetSessionIDBySubscriptionID(ctx, subscription.ID, scs)
 	if found {
-		return types.ErrorSessionAlreadyExists().Result()
+		return nil, types.ErrorSessionAlreadyExists()
 	}
 
 	freeClients := k.GetFreeClientsOfNode(ctx, subscription.NodeID)
 
 	if !types.IsFreeClient(freeClients, msg.From) && !subscription.RemainingDeposit.IsZero() {
 		if err := k.SubtractDeposit(ctx, subscription.Client, subscription.RemainingDeposit); err != nil {
-			return err.Result()
+			return nil, err
 		}
 	}
 
@@ -461,36 +462,37 @@ func handleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSub
 		),
 	)
 
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+
 }
 
-func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateSessionInfo) sdk.Result {
+func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateSessionInfo) (*sdk.Result, error) {
 	subscription, found := k.GetSubscription(ctx, msg.SubscriptionID)
 	if !found {
-		return types.ErrorSubscriptionDoesNotExist().Result()
+		return nil, types.ErrorSubscriptionDoesNotExist()
 	}
 	if subscription.Status == types.StatusInactive {
-		return types.ErrorInvalidSubscriptionStatus().Result()
+		return nil, types.ErrorInvalidSubscriptionStatus()
 	}
 	if !bytes.Equal(msg.ClientSignature.PubKey.Address(), subscription.Client.Bytes()) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized()
 	}
 
 	node, _ := k.GetNode(ctx, subscription.NodeID)
 	if !bytes.Equal(msg.NodeOwnerSignature.PubKey.Address(), node.Owner.Bytes()) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized()
 	}
 
 	scs := k.GetSessionsCountOfSubscription(ctx, subscription.ID)
 	data := hub.NewBandwidthSignatureData(subscription.ID, scs, msg.Bandwidth).Bytes()
 	if !msg.NodeOwnerSignature.VerifyBytes(data, msg.NodeOwnerSignature.Signature) {
-		return types.ErrorInvalidBandwidthSignature().Result()
+		return nil, types.ErrorInvalidBandwidthSignature()
 	}
 	if !msg.ClientSignature.VerifyBytes(data, msg.ClientSignature.Signature) {
-		return types.ErrorInvalidBandwidthSignature().Result()
+		return nil, types.ErrorInvalidBandwidthSignature()
 	}
 	if subscription.RemainingBandwidth.AnyLT(msg.Bandwidth) {
-		return types.ErrorInvalidBandwidth().Result()
+		return nil, types.ErrorInvalidBandwidth()
 	}
 	var session types.Session
 
@@ -524,28 +526,29 @@ func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpda
 			sdk.NewAttribute(AttributeKeyFromAddress, msg.From.String()),
 		),
 	)
-	return sdk.Result{Events: ctx.EventManager().Events(), Data: types.ModuleCdc.MustMarshalJSON(session.Bandwidth)}
+	return &sdk.Result{Events: ctx.EventManager().Events(), Data: types.ModuleCdc.MustMarshalJSON(session.Bandwidth)}, nil
+
 }
 
-func handleEndSession(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSession) sdk.Result {
+func handleEndSession(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSession) (*sdk.Result, error) {
 	subscription, found := k.GetSubscription(ctx, msg.SubscriptionID)
 	if !found {
-		return types.ErrorSubscriptionDoesNotExist().Result()
+		return nil, types.ErrorSubscriptionDoesNotExist()
 	}
 	if subscription.Status == types.StatusInactive {
-		return types.ErrorInvalidSubscriptionStatus().Result()
+		return nil, types.ErrorInvalidSubscriptionStatus()
 	}
 
 	node, _ := k.GetNode(ctx, subscription.NodeID)
 	if !msg.From.Equals(node.Owner) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized()
 	}
 
 	scs := k.GetSessionsCountOfSubscription(ctx, subscription.ID)
 
 	id, found := k.GetSessionIDBySubscriptionID(ctx, subscription.ID, scs)
 	if !found {
-		return types.ErrorInvalidSessionStatus().Result()
+		return nil, types.ErrorInvalidSessionStatus()
 	}
 
 	session, _ := k.GetSession(ctx, id)
@@ -608,10 +611,10 @@ func handleEndSession(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSession)
 		),
 	)
 
-	return sdk.Result{Events: ctx.EventManager().Events(), Data: types.ModuleCdc.MustMarshalJSON(session.Status)}
+	return &sdk.Result{Events: ctx.EventManager().Events(), Data: types.ModuleCdc.MustMarshalJSON(session.Status)}, nil
 }
 
-func handleRegisterResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterResolver) sdk.Result {
+func handleRegisterResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterResolver) (*sdk.Result, error) {
 	rc := k.GetResolverCount(ctx)
 
 	resolver := types.Resolver{
@@ -637,21 +640,22 @@ func handleRegisterResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegis
 			sdk.NewAttribute(AttributeKeyStatus, resolver.Status),
 		))
 
-	return sdk.Result{
+	return &sdk.Result{
 		Events: ctx.EventManager().Events(),
-	}
+	}, nil
+
 }
 
-func handleUpdateResolverInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateResolverInfo) sdk.Result {
+func handleUpdateResolverInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateResolverInfo) (*sdk.Result, error) {
 	resolver, found := k.GetResolver(ctx, msg.ResolverID)
 	if !found {
-		return types.ErrorResolverDoesNotExist().Result()
+		return nil, types.ErrorResolverDoesNotExist()
 	}
 	if !msg.From.Equals(resolver.Owner) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized()
 	}
 	if resolver.Status == types.StatusDeRegistered {
-		return types.ErrorInvalidResolverStatus().Result()
+		return nil, types.ErrorInvalidResolverStatus()
 	}
 
 	_resolver := types.Resolver{
@@ -670,22 +674,22 @@ func handleUpdateResolverInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpd
 		),
 	)
 
-	return sdk.Result{
+	return &sdk.Result{
 		Events: ctx.EventManager().Events(),
-	}
+	}, nil
 }
 
-func handleDeregisterResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterResolver) sdk.Result {
+func handleDeregisterResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterResolver) (*sdk.Result, error) {
 	resolver, found := k.GetResolver(ctx, msg.ResolverID)
 	if !found {
-		return types.ErrorResolverDoesNotExist().Result()
+		return nil, types.ErrorResolverDoesNotExist()
 	}
 	if !msg.From.Equals(resolver.Owner) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized()
 	}
 
 	if resolver.Status != types.StatusRegistered {
-		return types.ErrorInvalidResolverStatus().Result()
+		return nil, types.ErrorInvalidResolverStatus()
 	}
 
 	resolver.Status = types.StatusDeRegistered
@@ -701,7 +705,7 @@ func handleDeregisterResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgDer
 			sdk.NewAttribute(AttributeKeyStatus, resolver.Status),
 		))
 
-	return sdk.Result{
+	return &sdk.Result{
 		Events: ctx.EventManager().Events(),
-	}
+	}, nil
 }

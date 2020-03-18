@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bufio"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,7 +19,8 @@ func EndSessionTxCmd(cdc *codec.Codec) *cobra.Command {
 		Use:   "end",
 		Short: "End session ",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
 			id, err := hub.NewSubscriptionIDFromString(viper.GetString(flagSubscriptionID))

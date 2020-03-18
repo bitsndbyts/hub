@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/spf13/cobra"
 )
@@ -12,7 +12,7 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Querying commands for the vpn module",
 	}
 
-	cmd.AddCommand(client.GetCommands(
+	cmd.AddCommand(flags.GetCommands(
 		QueryNodeCmd(cdc),
 		QueryNodesCmd(cdc),
 		QuerySubscriptionCmd(cdc),
@@ -52,7 +52,7 @@ func nodeTxCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Node transactions subcommands",
 	}
 
-	cmd.AddCommand(client.PostCommands(
+	cmd.AddCommand(flags.PostCommands(
 		RegisterNodeTxCmd(cdc),
 		UpdateNodeInfoTxCmd(cdc),
 		AddFreeClientTxCmd(cdc),
@@ -71,7 +71,7 @@ func subscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Client subscription subcommands",
 	}
 
-	cmd.AddCommand(client.PostCommands(
+	cmd.AddCommand(flags.PostCommands(
 		StartSubscriptionTxCmd(cdc),
 		EndSubscriptionTxCmd(cdc),
 	)...)
@@ -85,7 +85,7 @@ func sessionTxCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Session transactions subcommands",
 	}
 
-	cmd.AddCommand(client.PostCommands(
+	cmd.AddCommand(flags.PostCommands(
 		SignSessionBandwidthTxCmd(cdc),
 		UpdateSessionInfoTxCmd(cdc),
 		EndSessionTxCmd(cdc),
@@ -100,7 +100,7 @@ func resolverTxCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Resolver node subcommands",
 	}
 
-	cmd.AddCommand(client.PostCommands(
+	cmd.AddCommand(flags.PostCommands(
 		RegisterResolverTxCmd(cdc),
 		UpdateResolverInfoTxCmd(cdc),
 		DeregisterResolverTxCmd(cdc),

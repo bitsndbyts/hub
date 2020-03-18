@@ -23,7 +23,7 @@ func (msg MsgUpdateSessionInfo) Type() string {
 	return "update_session_info"
 }
 
-func (msg MsgUpdateSessionInfo) ValidateBasic() sdk.Error {
+func (msg MsgUpdateSessionInfo) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -80,7 +80,7 @@ func (msg MsgEndSession) Type() string {
 	return "end_session"
 }
 
-func (msg MsgEndSession) ValidateBasic() sdk.Error {
+func (msg MsgEndSession) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}

@@ -2,9 +2,9 @@ package types
 
 import (
 	"encoding/json"
-	
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	
+
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -24,7 +24,7 @@ func (msg MsgRegisterNode) Type() string {
 	return "register_node"
 }
 
-func (msg MsgRegisterNode) ValidateBasic() sdk.Error {
+func (msg MsgRegisterNode) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -47,7 +47,7 @@ func (msg MsgRegisterNode) ValidateBasic() sdk.Error {
 	if msg.Encryption == "" {
 		return ErrorInvalidField("encryption")
 	}
-	
+
 	return nil
 }
 
@@ -56,7 +56,7 @@ func (msg MsgRegisterNode) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return bz
 }
 
@@ -99,7 +99,7 @@ func (msg MsgUpdateNodeInfo) Type() string {
 	return "update_node_info"
 }
 
-func (msg MsgUpdateNodeInfo) ValidateBasic() sdk.Error {
+func (msg MsgUpdateNodeInfo) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -113,7 +113,7 @@ func (msg MsgUpdateNodeInfo) ValidateBasic() sdk.Error {
 	if msg.InternetSpeed.AnyNegative() {
 		return ErrorInvalidField("internet_speed")
 	}
-	
+
 	return nil
 }
 
@@ -122,7 +122,7 @@ func (msg MsgUpdateNodeInfo) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return bz
 }
 
@@ -161,7 +161,7 @@ func (msg MsgAddFreeClient) Type() string {
 	return "add_free_client"
 }
 
-func (msg MsgAddFreeClient) ValidateBasic() sdk.Error {
+func (msg MsgAddFreeClient) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -171,7 +171,7 @@ func (msg MsgAddFreeClient) ValidateBasic() sdk.Error {
 	if msg.Client == nil || msg.Client.Empty() {
 		return ErrorInvalidField("client")
 	}
-	
+
 	return nil
 }
 
@@ -180,7 +180,7 @@ func (msg MsgAddFreeClient) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return bz
 }
 
@@ -212,7 +212,7 @@ func (msg MsgRemoveFreeClient) Type() string {
 	return "remove_free_client"
 }
 
-func (msg MsgRemoveFreeClient) ValidateBasic() sdk.Error {
+func (msg MsgRemoveFreeClient) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -222,7 +222,7 @@ func (msg MsgRemoveFreeClient) ValidateBasic() sdk.Error {
 	if msg.Client == nil || msg.Client.Empty() {
 		return ErrorInvalidField("client")
 	}
-	
+
 	return nil
 }
 
@@ -231,7 +231,7 @@ func (msg MsgRemoveFreeClient) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return bz
 }
 
@@ -263,7 +263,7 @@ func (msg MsgRegisterVPNOnResolver) Type() string {
 	return "register_vpn_on_resolver"
 }
 
-func (msg MsgRegisterVPNOnResolver) ValidateBasic() sdk.Error {
+func (msg MsgRegisterVPNOnResolver) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -273,7 +273,7 @@ func (msg MsgRegisterVPNOnResolver) ValidateBasic() sdk.Error {
 	if msg.ResolverID == nil {
 		return ErrorInvalidField("resolver")
 	}
-	
+
 	return nil
 }
 
@@ -282,7 +282,7 @@ func (msg MsgRegisterVPNOnResolver) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return bz
 }
 
@@ -315,7 +315,7 @@ func (msg MsgDeregisterVPNOnResolver) Type() string {
 	return "deregister_vpn_on_resolver"
 }
 
-func (msg MsgDeregisterVPNOnResolver) ValidateBasic() sdk.Error {
+func (msg MsgDeregisterVPNOnResolver) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -325,7 +325,7 @@ func (msg MsgDeregisterVPNOnResolver) ValidateBasic() sdk.Error {
 	if msg.ResolverID == nil {
 		return ErrorInvalidField("resolver")
 	}
-	
+
 	return nil
 }
 
@@ -334,7 +334,7 @@ func (msg MsgDeregisterVPNOnResolver) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return bz
 }
 
@@ -366,11 +366,11 @@ func (msg MsgDeregisterNode) Type() string {
 	return "deregister_node"
 }
 
-func (msg MsgDeregisterNode) ValidateBasic() sdk.Error {
+func (msg MsgDeregisterNode) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	
+
 	return nil
 }
 
@@ -379,7 +379,7 @@ func (msg MsgDeregisterNode) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return bz
 }
 

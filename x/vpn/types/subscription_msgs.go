@@ -2,9 +2,9 @@ package types
 
 import (
 	"encoding/json"
-	
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	
+
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -21,7 +21,7 @@ func (msg MsgStartSubscription) Type() string {
 	return "start_subscription"
 }
 
-func (msg MsgStartSubscription) ValidateBasic() sdk.Error {
+func (msg MsgStartSubscription) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -34,7 +34,7 @@ func (msg MsgStartSubscription) ValidateBasic() sdk.Error {
 	if msg.Deposit.Denom == "" || !msg.Deposit.IsPositive() {
 		return ErrorInvalidField("deposit")
 	}
-	
+
 	return nil
 }
 
@@ -43,7 +43,7 @@ func (msg MsgStartSubscription) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return bz
 }
 
@@ -76,11 +76,11 @@ func (msg MsgEndSubscription) Type() string {
 	return "end_subscription"
 }
 
-func (msg MsgEndSubscription) ValidateBasic() sdk.Error {
+func (msg MsgEndSubscription) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	
+
 	return nil
 }
 
@@ -89,7 +89,7 @@ func (msg MsgEndSubscription) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return bz
 }
 

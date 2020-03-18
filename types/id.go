@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	
+
 	"github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -44,12 +44,12 @@ func NewNodeIDFromString(s string) (NodeID, error) {
 	if len(s) < 5 {
 		return nil, fmt.Errorf("invalid node id length")
 	}
-	
+
 	i, err := strconv.ParseUint(s[4:], 16, 64)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return NewNodeID(i), nil
 }
 
@@ -82,14 +82,14 @@ func (id *NodeID) UnmarshalJSON(bytes []byte) error {
 	if err := json.Unmarshal(bytes, &s); err != nil {
 		return err
 	}
-	
+
 	_id, err := NewNodeIDFromString(s)
 	if err != nil {
 		return err
 	}
-	
+
 	*id = _id
-	
+
 	return nil
 }
 
@@ -103,12 +103,12 @@ func NewSessionIDFromString(s string) (SessionID, error) {
 	if len(s) < 5 {
 		return nil, fmt.Errorf("invalid session id length")
 	}
-	
+
 	i, err := strconv.ParseUint(s[4:], 16, 64)
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return NewSessionID(i), nil
 }
 
@@ -141,14 +141,14 @@ func (id *SessionID) UnmarshalJSON(b []byte) error {
 	if err := json.Unmarshal(b, &s); err != nil {
 		return err
 	}
-	
+
 	_id, err := NewSessionIDFromString(s)
 	if err != nil {
 		return err
 	}
-	
+
 	*id = _id
-	
+
 	return nil
 }
 
@@ -162,12 +162,12 @@ func NewSubscriptionIDFromString(s string) (SubscriptionID, error) {
 	if len(s) < 5 {
 		return nil, fmt.Errorf("invalid subscription id length")
 	}
-	
+
 	i, err := strconv.ParseUint(s[4:], 16, 64)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return NewSubscriptionID(i), nil
 }
 
@@ -200,14 +200,14 @@ func (id *SubscriptionID) UnmarshalJSON(bytes []byte) error {
 	if err := json.Unmarshal(bytes, &s); err != nil {
 		return err
 	}
-	
+
 	_id, err := NewSubscriptionIDFromString(s)
 	if err != nil {
 		return err
 	}
-	
+
 	*id = _id
-	
+
 	return nil
 }
 
@@ -221,12 +221,12 @@ func NewResolverIDFromString(s string) (ResolverID, error) {
 	if len(s) < 5 {
 		return nil, fmt.Errorf("invalid resolver id length")
 	}
-	
+
 	i, err := strconv.ParseUint(s[4:], 16, 64)
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return NewResolverID(i), nil
 }
 
@@ -259,14 +259,14 @@ func (id *ResolverID) UnmarshalJSON(b []byte) error {
 	if err := json.Unmarshal(b, &s); err != nil {
 		return err
 	}
-	
+
 	_id, err := NewResolverIDFromString(s)
 	if err != nil {
 		return err
 	}
-	
+
 	*id = _id
-	
+
 	return nil
 }
 
@@ -289,7 +289,7 @@ func (ids IDs) Less(x, y int) bool {
 	} else if i == 0 {
 		return ids[x].Uint64() < ids[y].Uint64()
 	}
-	
+
 	return false
 }
 
@@ -312,11 +312,11 @@ func (ids IDs) Search(id ID) int {
 	index := sort.Search(len(ids), func(x int) bool {
 		return ids[x].Prefix() > id.Prefix() || ids[x].Uint64() >= i
 	})
-	
+
 	if (index == ids.Len()) ||
 		(index < ids.Len() && ids[index].String() != id.String()) {
 		return ids.Len()
 	}
-	
+
 	return index
 }

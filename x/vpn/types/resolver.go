@@ -3,9 +3,9 @@ package types
 import (
 	"fmt"
 	"strings"
-	
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	
+
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -33,14 +33,14 @@ func (resolver Resolver) UpdateInfo(_resolver Resolver) Resolver {
 		// commission rate between 0 to 1
 		resolver.Commission = _resolver.Commission
 	}
-	
+
 	return resolver
 }
 
 func (resolver Resolver) GetCommission(pay sdk.Coin) sdk.Coin {
 	commission := resolver.Commission.Mul(sdk.NewDec(100)).MulInt(pay.Amount).Quo(sdk.NewDec(100))
 	pay.Amount = commission.RoundInt()
-	
+
 	return pay
 }
 
@@ -51,6 +51,6 @@ func (resolvers Resolvers) String() string {
 	for _, resolver := range resolvers {
 		out += resolver.String() + "\n"
 	}
-	
+
 	return strings.TrimSpace(out)
 }

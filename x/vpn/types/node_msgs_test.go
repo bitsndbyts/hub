@@ -16,7 +16,7 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  *MsgRegisterNode
-		want sdk.Error
+		want error
 	}{
 		{
 			"from is nil",
@@ -111,7 +111,7 @@ func TestMsgUpdateNodeInfo_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  *MsgUpdateNodeInfo
-		want sdk.Error
+		want error
 	}{
 		{
 			"from is nil",
@@ -206,7 +206,7 @@ func TestMsgAddFreeClient_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  *MsgAddFreeClient
-		want sdk.Error
+		want error
 	}{
 		{
 			"from is nil",
@@ -273,7 +273,7 @@ func TestMsgRemoveFreeClient_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  *MsgRemoveFreeClient
-		want sdk.Error
+		want error
 	}{
 		{
 			"from is nil",
@@ -340,7 +340,7 @@ func TestMsgAddVPNOnResolver_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  *MsgRegisterVPNOnResolver
-		want sdk.Error
+		want error
 	}{
 		{
 			"from is nil",
@@ -403,7 +403,7 @@ func TestMsgDeregisterVPNOnResolver_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  *MsgDeregisterVPNOnResolver
-		want sdk.Error
+		want error
 	}{
 		{
 			"from is nil",
@@ -466,7 +466,7 @@ func TestMsgDeregisterNode_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  *MsgDeregisterNode
-		want sdk.Error
+		want error
 	}{
 		{
 			"from is nil",
