@@ -2,6 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/sentinel-official/hub/x/deposit/types"
 )
@@ -57,7 +58,7 @@ func (k Keeper) Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) (e
 
 	deposit.Coins = deposit.Coins.Add(coins...)
 	if deposit.Coins.IsAnyNegative() {
-		return types.ErrorInsufficientDepositFunds(deposit.Coins, coins)
+		return sdkerrors.Wrapf(types.ErrorInsufficientDepositFunds, "insufficient deposit funds: %s < %s", deposit.Coins, coins)
 	}
 
 	k.SetDeposit(ctx, deposit)
@@ -67,12 +68,12 @@ func (k Keeper) Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) (e
 func (k Keeper) Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) (err error) {
 	deposit, found := k.GetDeposit(ctx, address)
 	if !found {
-		return types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
+		return sdkerrors.Wrapf(types.ErrorInsufficientDepositFunds, "insufficient deposit funds: %s < %s", coins, deposit.Coins)
 	}
 
 	deposit.Coins, _ = deposit.Coins.SafeSub(coins)
 	if deposit.Coins.IsAnyNegative() {
-		return types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
+		return sdkerrors.Wrapf(types.ErrorInsufficientDepositFunds, "insufficient deposit funds: %s < %s", coins, deposit.Coins)
 	}
 
 	if err := k.supply.SendCoinsFromModuleToAccount(ctx, types.ModuleName, address, coins); err != nil {
@@ -86,12 +87,12 @@ func (k Keeper) Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coin
 func (k Keeper) SendFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coins sdk.Coins) error {
 	deposit, found := k.GetDeposit(ctx, from)
 	if !found {
-		return types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
+		return sdkerrors.Wrapf(types.ErrorInsufficientDepositFunds, "insufficient deposit funds: %s < %s", coins, deposit.Coins)
 	}
 
 	deposit.Coins, _ = deposit.Coins.SafeSub(coins)
 	if deposit.Coins.IsAnyNegative() {
-		return types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
+		return sdkerrors.Wrapf(types.ErrorInsufficientDepositFunds, "insufficient deposit funds: %s < %s", coins, deposit.Coins)
 	}
 
 	if err := k.supply.SendCoinsFromModuleToAccount(ctx, types.ModuleName, to, coins); err != nil {
@@ -117,7 +118,7 @@ func (k Keeper) ReceiveFromAccountToDeposit(ctx sdk.Context, from, to sdk.AccAdd
 
 	deposit.Coins = deposit.Coins.Add(coins...)
 	if deposit.Coins.IsAnyNegative() {
-		return types.ErrorInsufficientDepositFunds(deposit.Coins, coins)
+		return sdkerrors.Wrapf(types.ErrorInsufficientDepositFunds, "insufficient deposit funds: %s < %s", deposit.Coins, coins)
 	}
 
 	k.SetDeposit(ctx, deposit)

@@ -146,6 +146,7 @@ func NewHubApp(logger log.Logger, db db.DB, traceStore io.Writer, loadLatest boo
 	app.subspaces[slashing.ModuleName] = app.paramsKeeper.Subspace(slashing.DefaultParamspace)
 	app.subspaces[gov.ModuleName] = app.paramsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
 	app.subspaces[crisis.ModuleName] = app.paramsKeeper.Subspace(crisis.DefaultParamspace)
+	app.subspaces[vpn.ModuleName] = app.paramsKeeper.Subspace(vpn.ModuleName)
 
 	app.accountKeeper = auth.NewAccountKeeper(app.cdc,
 		keys[auth.StoreKey],
@@ -209,7 +210,7 @@ func NewHubApp(logger log.Logger, db db.DB, traceStore io.Writer, loadLatest boo
 		keys[vpn.StoreKeySubscription],
 		keys[vpn.StoreKeySession],
 		keys[vpn.StoreKeyResolver],
-		app.paramsKeeper.Subspace(vpn.DefaultParamspace),
+		app.subspaces[vpn.ModuleName],
 		app.depositKeeper)
 
 	app.mm = module.NewManager(

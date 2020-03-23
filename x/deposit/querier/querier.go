@@ -2,6 +2,7 @@ package querier
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/sentinel-official/hub/x/deposit/keeper"
@@ -16,7 +17,7 @@ func NewQuerier(k keeper.Keeper) sdk.Querier {
 		case types.QueryAllDeposits:
 			return queryAllDeposits(ctx, k)
 		default:
-			return nil, types.ErrorInvalidQueryType(path[0])
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown query path: %s", path[0])
 		}
 	}
 }

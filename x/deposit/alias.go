@@ -23,8 +23,6 @@ const (
 
 var (
 	// functions aliases
-	ErrorMarshal                   = types.ErrorMarshal
-	ErrorUnmarshal                 = types.ErrorUnmarshal
 	ErrorInvalidQueryType          = types.ErrorInvalidQueryType
 	ErrorInsufficientDepositFunds  = types.ErrorInsufficientDepositFunds
 	NewGenesisState                = types.NewGenesisState
