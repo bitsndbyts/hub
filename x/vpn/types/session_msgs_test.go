@@ -87,3 +87,62 @@ func TestMsgUpdateSessionInfo_Route(t *testing.T) {
 	msg := NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1)
 	require.Equal(t, RouterKey, msg.Route())
 }
+
+func TestMsgEndSession_ValidateBasic(t *testing.T) {
+	tests := []struct {
+		name string
+		msg  *MsgEndSession
+		want error
+	}{
+		{
+			"from is nil",
+			NewMsgEndSession(nil, hub.NewSubscriptionID(0)),
+			ErrInvalidField,
+		}, {
+			"from is empty",
+			NewMsgEndSession([]byte(""), hub.NewSubscriptionID(1), ),
+			ErrInvalidField,
+		}, {
+			"subscription_id nil",
+			NewMsgEndSession(TestAddress1, nil),
+			ErrInvalidField,
+		}, {
+			"valid ",
+			NewMsgEndSession(TestAddress1, hub.NewSubscriptionID(1)),
+			nil,
+		},
+	}
+	
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
+				t.Errorf("\ngot = %vwant = %v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestMsgEndSession_GetSignBytes(t *testing.T) {
+	msg := NewMsgEndSession(TestAddress1, hub.NewSubscriptionID(1))
+	msgBytes, err := json.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
+	
+	require.Equal(t, msgBytes, msg.GetSignBytes())
+}
+
+func TestMsgEndSession_GetSigners(t *testing.T) {
+	msg := NewMsgEndSession(TestAddress1, hub.NewSubscriptionID(1))
+	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
+}
+
+func TestMsgEndSession_Type(t *testing.T) {
+	msg := NewMsgEndSession(TestAddress1, hub.NewSubscriptionID(1), )
+	require.Equal(t, "end_session", msg.Type())
+}
+
+func TestMsgEndSession_Route(t *testing.T) {
+	msg := NewMsgEndSession(TestAddress1, hub.NewSubscriptionID(1))
+	require.Equal(t, RouterKey, msg.Route())
+}

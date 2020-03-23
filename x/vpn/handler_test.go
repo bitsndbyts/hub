@@ -1,7 +1,6 @@
 package vpn
 
 import (
-	"fmt"
 	"testing"
 	
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -151,21 +150,6 @@ func Test_handleUpdateNodeInfo(t *testing.T) {
 	res, err = handler(ctx, *msg)
 	require.NotNil(t, err)
 	
-	node.Status = StatusInactive
-	k.SetNode(ctx, node)
-	msg = NewMsgUpdateNodeInfo(node.Owner, node.ID, "new_node_type", "new_version", "new_moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, types.TestBandwidthPos1, "new_encryption")
-	res, err = handler(ctx, *msg)
-	fmt.Println(res.Data, res.Log, err)
-	require.NotNil(t, err)
-	
-	node, found = k.GetNode(ctx, node.ID)
-	require.Equal(t, true, found)
-	require.Equal(t, "new_node_type", node.Type)
-	require.Equal(t, "new_version", node.Version)
-	require.Equal(t, "new_moniker", node.Moniker)
-	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}, node.PricesPerGB)
-	require.Equal(t, "new_encryption", node.Encryption)
-	
 	node.Status = StatusRegistered
 	k.SetNode(ctx, node)
 	msg = NewMsgUpdateNodeInfo(node.Owner, node.ID, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, types.TestBandwidthPos1, "encryption")
@@ -228,7 +212,7 @@ func Test_handleDeregisterNode(t *testing.T) {
 	
 	msg = NewMsgDeregisterNode(node.Owner, node.ID)
 	res, err = handler(ctx, *msg)
-	require.NoError(t, err)
+	require.Nil(t, err)
 	require.NotNil(t, res)
 	
 	coins := bk.GetCoins(ctx, node.Owner)
@@ -248,13 +232,9 @@ func Test_handleDeregisterNode(t *testing.T) {
 	require.Equal(t, true, found)
 	require.Equal(t, StatusRegistered, node.Status)
 	
-	node, found = k.GetNode(ctx, node.ID)
-	require.Equal(t, true, found)
-	require.Equal(t, StatusRegistered, node.Status)
-	
 	msg = NewMsgDeregisterNode(node.Owner, node.ID)
 	res, err = handler(ctx, *msg)
-	require.NoError(t, err)
+	require.Nil(t, err)
 	require.NotNil(t, res)
 	
 	coins = bk.GetCoins(ctx, node.Owner)
@@ -284,12 +264,12 @@ func Test_handleDeregisterNode(t *testing.T) {
 	
 	deposit, found := dk.GetDeposit(ctx, node.Owner)
 	require.Equal(t, true, found)
-	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}.Add(sdk.Coins{sdk.NewInt64Coin("stake", 100)}...), deposit.Coins)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}.Add(sdk.Coins{sdk.NewInt64Coin("stake", 100)}...), deposit.Coins) // TODO : verify
 	
 	msg = NewMsgDeregisterNode(node.Owner, node.ID)
 	res, err = handler(ctx, *msg)
-	require.NoError(t, err)
-	require.NotNil(t, res)
+	require.NotNil(t, err)
+	require.Nil(t, res)
 	
 	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
@@ -857,12 +837,12 @@ func Test_HandleRegisterResolver(t *testing.T) {
 	updateResolverInfoMsg := NewMsgUpdateResolverInfo(types.TestAddress2, hub.NewResolverID(4), sdk.NewDecWithPrec(2, 1))
 	res, err = handler(ctx, updateResolverInfoMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorResolverDoesNotExist(), res.Log)
+	require.Equal(t, types.ErrorResolverDoesNotExist(), err)
 	
 	updateResolverInfoMsg = NewMsgUpdateResolverInfo(types.TestAddress2, hub.NewResolverID(2), sdk.NewDecWithPrec(2, 1))
 	res, err = handler(ctx, updateResolverInfoMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorUnauthorized(), res.Log)
+	require.Equal(t, types.ErrorUnauthorized(), err)
 	
 	resolver, _ = k.GetResolver(ctx, hub.NewResolverID(2))
 	resolver.Status = StatusDeRegistered
@@ -871,7 +851,7 @@ func Test_HandleRegisterResolver(t *testing.T) {
 	updateResolverInfoMsg = NewMsgUpdateResolverInfo(types.TestAddress1, hub.NewResolverID(2), sdk.NewDecWithPrec(2, 1))
 	res, err = handler(ctx, updateResolverInfoMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorInvalidResolverStatus(), res.Log)
+	require.Equal(t, types.ErrorInvalidResolverStatus(), err)
 	
 	resolver.Status = StatusRegistered
 	k.SetResolver(ctx, resolver)
@@ -893,12 +873,12 @@ func Test_HandleRegisterResolver(t *testing.T) {
 	deRegisterResolverMsg := NewMsgDeregisterResolver(types.TestAddress2, hub.NewResolverID(k.GetResolverCount(ctx)+1))
 	res, err = handler(ctx, deRegisterResolverMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorResolverDoesNotExist(), res.Log)
+	require.Equal(t, types.ErrorResolverDoesNotExist(), err)
 	
 	deRegisterResolverMsg = NewMsgDeregisterResolver(types.TestAddress2, hub.NewResolverID(2))
 	res, err = handler(ctx, deRegisterResolverMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorUnauthorized(), res.Log)
+	require.Equal(t, types.ErrorUnauthorized(), err)
 	
 	resolver.Status = StatusDeRegistered
 	k.SetResolver(ctx, resolver)
@@ -925,7 +905,7 @@ func Test_handleFreeClientsOfNode(t *testing.T) {
 	
 	msg := NewMsgRegisterNode(node.Owner, node.Type, node.Version, node.Moniker, node.PricesPerGB, node.InternetSpeed, node.Encryption)
 	res, err := handler(ctx, *msg)
-	require.NoError(t, err)
+	require.Nil(t, err)
 	require.NotNil(t, res)
 	
 	node, found := k.GetNode(ctx, hub.NewNodeID(0))
@@ -942,16 +922,16 @@ func Test_handleFreeClientsOfNode(t *testing.T) {
 	addClientMsg := NewMsgAddFreeClient(types.TestAddress2, hub.NewNodeID(3), types.TestAddress1)
 	res, err = handler(ctx, *addClientMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorNodeDoesNotExist(), res.Log)
+	require.Equal(t, types.ErrorNodeDoesNotExist(), err)
 	
 	addClientMsg = NewMsgAddFreeClient(types.TestAddress2, node.ID, types.TestAddress1)
 	res, err = handler(ctx, *addClientMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorUnauthorized(), res.Log)
+	require.Equal(t, types.ErrorUnauthorized(), err)
 	
 	addClientMsg = NewMsgAddFreeClient(node.Owner, node.ID, types.TestAddress2)
 	res, err = handler(ctx, *addClientMsg)
-	require.NoError(t, err)
+	require.Nil(t, err)
 	require.NotNil(t, res)
 	
 	clients := k.GetFreeClientsOfNode(ctx, node.ID)
@@ -966,29 +946,29 @@ func Test_handleFreeClientsOfNode(t *testing.T) {
 	addClientMsg = NewMsgAddFreeClient(types.TestAddress1, node.ID, types.TestAddress1)
 	res, err = handler(ctx, *addClientMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorResolverDoesNotExist(), res.Log)
+	require.Equal(t, types.ErrorInvalidNodeStatus(), err)
 	
 	removeClientMsg := NewMsgRemoveFreeClient(types.TestAddress2, hub.NewNodeID(3), types.TestAddress1)
 	res, err = handler(ctx, *removeClientMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorNodeDoesNotExist(), res.Log)
+	require.Equal(t, types.ErrorNodeDoesNotExist(), err)
 	
 	removeClientMsg = NewMsgRemoveFreeClient(types.TestAddress2, node.ID, types.TestAddress1)
 	res, err = handler(ctx, *removeClientMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorUnauthorized(), res.Log)
+	require.Equal(t, types.ErrorUnauthorized(), err)
 	
 	removeClientMsg = NewMsgRemoveFreeClient(types.TestAddress1, node.ID, types.TestAddress1)
 	res, err = handler(ctx, *removeClientMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorResolverDoesNotExist(), res.Log)
+	require.Equal(t, types.ErrorInvalidNodeStatus(), err)
 	
 	node.Status = types.StatusRegistered
 	k.SetNode(ctx, node)
 	
 	removeClientMsg = NewMsgRemoveFreeClient(types.TestAddress1, node.ID, types.TestAddress2)
 	res, err = handler(ctx, *removeClientMsg)
-	require.NoError(t, err)
+	require.Nil(t, err)
 	require.NotNil(t, res)
 	
 	require.Equal(t, 0, len(k.GetFreeClientsOfNode(ctx, node.ID)))
@@ -997,7 +977,7 @@ func Test_handleFreeClientsOfNode(t *testing.T) {
 	removeClientMsg = NewMsgRemoveFreeClient(types.TestAddress1, node.ID, types.TestAddress2)
 	res, err = handler(ctx, *removeClientMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorFreeClientDoesNotExist(), res.Log)
+	require.Equal(t, types.ErrorFreeClientDoesNotExist(), err)
 	
 }
 
@@ -1011,7 +991,7 @@ func Test_UpdateVPNOrResolver(t *testing.T) {
 	addMsg := NewMsgRegisterVPNOnResolver(types.TestAddress1, hub.NewNodeID(3), resolver.ID)
 	res, err := handler(ctx, *addMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorNodeDoesNotExist(), res.Log)
+	require.Equal(t, types.ErrorNodeDoesNotExist(), err)
 	
 	node.Status = types.StatusRegistered
 	k.SetNode(ctx, node)
@@ -1020,12 +1000,12 @@ func Test_UpdateVPNOrResolver(t *testing.T) {
 	addMsg = NewMsgRegisterVPNOnResolver(types.TestAddress2, node.ID, resolver.ID)
 	res, err = handler(ctx, *addMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorUnauthorized(), res.Log)
+	require.Equal(t, types.ErrorUnauthorized(), err)
 	
 	addMsg = NewMsgRegisterVPNOnResolver(types.TestAddress1, node.ID, hub.NewResolverID(4))
 	res, err = handler(ctx, *addMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorResolverDoesNotExist(), res.Log)
+	require.Equal(t, types.ErrorResolverDoesNotExist(), err)
 	
 	addMsg = NewMsgRegisterVPNOnResolver(types.TestAddress1, node.ID, resolver.ID)
 	res, err = handler(ctx, *addMsg)
@@ -1041,7 +1021,7 @@ func Test_UpdateVPNOrResolver(t *testing.T) {
 	addMsg = NewMsgRegisterVPNOnResolver(types.TestAddress1, node.ID, resolver.ID)
 	res, err = handler(ctx, *addMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorInvalidResolverStatus(), res.Log)
+	require.Equal(t, types.ErrorInvalidResolverStatus(), err)
 	
 	node.Status = types.StatusDeRegistered
 	k.SetNode(ctx, node)
@@ -1049,22 +1029,22 @@ func Test_UpdateVPNOrResolver(t *testing.T) {
 	addMsg = NewMsgRegisterVPNOnResolver(types.TestAddress1, node.ID, resolver.ID)
 	res, err = handler(ctx, *addMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorInvalidNodeStatus(), res.Log)
+	require.Equal(t, types.ErrorInvalidNodeStatus(), err)
 	
 	removeMsg := NewMsgDeregisterVPNOnResolver(types.TestAddress1, hub.NewNodeID(3), resolver.ID)
 	res, err = handler(ctx, *removeMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorNodeDoesNotExist(), err.Error())
+	require.Equal(t, types.ErrorNodeDoesNotExist(), err)
 	
 	removeMsg = NewMsgDeregisterVPNOnResolver(types.TestAddress2, node.ID, resolver.ID)
 	res, err = handler(ctx, *removeMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorUnauthorized(), res.Log)
+	require.Equal(t, types.ErrorUnauthorized(), err)
 	
 	removeMsg = NewMsgDeregisterVPNOnResolver(types.TestAddress1, node.ID, resolver.ID)
 	res, err = handler(ctx, *removeMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorInvalidNodeStatus(), res.Log)
+	require.Equal(t, types.ErrorInvalidNodeStatus(), err)
 	
 	node.Status = types.StatusRegistered
 	k.SetNode(ctx, node)
@@ -1072,7 +1052,7 @@ func Test_UpdateVPNOrResolver(t *testing.T) {
 	removeMsg = NewMsgDeregisterVPNOnResolver(types.TestAddress1, node.ID, hub.NewResolverID(4))
 	res, err = handler(ctx, *removeMsg)
 	require.NotNil(t, err)
-	require.Equal(t, types.ErrorResolverDoesNotExist(), res.Log)
+	require.Equal(t, types.ErrorResolverDoesNotExist(), err)
 	
 	resolver.Status = types.StatusRegistered
 	k.SetResolver(ctx, resolver)
@@ -1088,5 +1068,4 @@ func Test_UpdateVPNOrResolver(t *testing.T) {
 	res, err = handler(ctx, *removeMsg)
 	require.NoError(t, err)
 	require.NotNil(t, res)
-	
 }

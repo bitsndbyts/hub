@@ -84,27 +84,24 @@ func (msg MsgEndSession) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	
+	if msg.SubscriptionID == nil {
+		return ErrorInvalidField("subscription_id")
+	}
 	return nil
 }
-
 func (msg MsgEndSession) GetSignBytes() []byte {
 	bz, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
 	}
-	
 	return bz
 }
-
 func (msg MsgEndSession) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.From}
 }
-
 func (msg MsgEndSession) Route() string {
 	return RouterKey
 }
-
 func NewMsgEndSession(from sdk.AccAddress, subscriptionID hub.SubscriptionID) *MsgEndSession {
 	return &MsgEndSession{
 		From:           from,
