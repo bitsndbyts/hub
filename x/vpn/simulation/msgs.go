@@ -1,7 +1,7 @@
 package simulation
 
 //
-//import (
+// import (
 //	"fmt"
 //	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 //	"github.com/sentinel-official/hub/x/vpn/keeper"
@@ -15,9 +15,9 @@ package simulation
 //
 //	hub "github.com/sentinel-official/hub/types"
 //	"github.com/sentinel-official/hub/x/vpn"
-//)
+// )
 //
-//func SimulateMsgRegisterNode(keeper vpn.Keeper) simulation.Operation {
+// func SimulateMsgRegisterNode(keeper vpn.Keeper) simulation.Operation {
 //	handler := vpn.NewHandler(keeper)
 //	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, chainID string) (
 //		simulation.OperationMsg, []simulation.FutureOperation, error) {
@@ -35,9 +35,9 @@ package simulation
 //		ok := handler(ctx, *msg)
 //		return simulation.NewOperationMsg(msg, ok, ""), nil, nil
 //	}
-//}
+// }
 //
-//func SimulateMsgUpdateNodeInfo(ak types.AccountKeeper,keeper vpn.Keeper) simulation.Operation {
+// func SimulateMsgUpdateNodeInfo(ak types.AccountKeeper,keeper vpn.Keeper) simulation.Operation {
 //	handler := vpn.NewHandler(keeper)
 //	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, chainID string) (
 //		simulation.OperationMsg, []simulation.FutureOperation, error) {
@@ -64,9 +64,9 @@ package simulation
 //
 //		return simulation.NewOperationMsg(msg, ok, ""), nil, nil
 //	}
-//}
+// }
 //
-//func SimulateMsgDeregisterNode(keeper vpn.Keeper) simulation.Operation {
+// func SimulateMsgDeregisterNode(keeper vpn.Keeper) simulation.Operation {
 //	handler := vpn.NewHandler(keeper)
 //
 //	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
@@ -86,9 +86,9 @@ package simulation
 //		ok := handler(ctx, *msg).IsOK()
 //		return simulation.NewOperationMsg(msg, ok, ""), nil, nil
 //	}
-//}
+// }
 //
-//func SimulateMsgStartSubscription(keeper vpn.Keeper) simulation.Operation {
+// func SimulateMsgStartSubscription(keeper vpn.Keeper) simulation.Operation {
 //	handler := vpn.NewHandler(keeper)
 //
 //	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
@@ -113,9 +113,9 @@ package simulation
 //		ok := handler(ctx, *msg).IsOK()
 //		return simulation.NewOperationMsg(msg, ok, ""), nil, nil
 //	}
-//}
+// }
 //
-//func SimulateMsgEndSubscription(keeper vpn.Keeper) simulation.Operation {
+// func SimulateMsgEndSubscription(keeper vpn.Keeper) simulation.Operation {
 //	handler := vpn.NewHandler(keeper)
 //
 //	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, chainID string) (
@@ -135,9 +135,9 @@ package simulation
 //		ok := handler(ctx, *msg).IsOK()
 //		return simulation.NewOperationMsg(msg, ok, ""), nil, nil
 //	}
-//}
+// }
 //
-//func SimulateMsgUpdateSessionInfo(keeper vpn.Keeper) simulation.Operation {
+// func SimulateMsgUpdateSessionInfo(keeper vpn.Keeper) simulation.Operation {
 //	handler := vpn.NewHandler(keeper)
 //
 //	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, ChainID string) (
@@ -187,9 +187,9 @@ package simulation
 //		ok := handler(ctx, *msg).IsOK()
 //		return simulation.NewOperationMsg(msg, ok, ""), nil, nil
 //	}
-//}
+// }
 //
-//func SimulateEndBlock(keeper vpn.Keeper) simulation.Operation {
+// func SimulateEndBlock(keeper vpn.Keeper) simulation.Operation {
 //	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, chainID string) (
 //		simulation.OperationMsg, []simulation.FutureOperation, error) {
 //		if len(keeper.GetAllNodes(ctx)) == 0 {
@@ -203,4 +203,4 @@ package simulation
 //		vpn.EndBlock(ctx, keeper)
 //		return simulation.NewOperationMsgBasic(vpn.ModuleName, "end_block", "", true, nil), nil, nil
 //	}
-//}
+// }

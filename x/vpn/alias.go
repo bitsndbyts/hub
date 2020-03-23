@@ -48,8 +48,6 @@ const (
 var (
 	// functions aliases
 	RegisterCodec                             = types.RegisterCodec
-	ErrorMarshal                              = types.ErrorMarshal
-	ErrorUnmarshal                            = types.ErrorUnmarshal
 	ErrorUnknownMsgType                       = types.ErrorUnknownMsgType
 	ErrorInvalidQueryType                     = types.ErrorInvalidQueryType
 	ErrorInvalidField                         = types.ErrorInvalidField
@@ -115,7 +113,7 @@ var (
 	RandomSubscription                        = keeper.RandomSubscription
 	RandomSession                             = keeper.RandomSession
 	RandomResolver                            = keeper.RandomResolver
-
+	
 	// variable aliases
 	ModuleCdc                            = types.ModuleCdc
 	NodesCountKey                        = types.NodesCountKey
@@ -138,7 +136,7 @@ var (
 	KeyFreeNodesCount                    = types.KeyFreeNodesCount
 	KeyDeposit                           = types.KeyDeposit
 	KeySessionInactiveInterval           = types.KeySessionInactiveInterval
-
+	
 	EventTypeMsgRegisterNode            = types.EventTypeMsgRegisterNode
 	EventTypeMsgUpdateNodeInfo          = types.EventTypeMsgUpdateNodeInfo
 	EventTypeMsgDeregisterNode          = types.EventTypeMsgDeregisterNode
@@ -152,7 +150,7 @@ var (
 	EventTypeMsgStartSubscription       = types.EventTypeMsgStartSubscription
 	EventTypeMsgEndSubscription         = types.EventTypeMsgEndSubscription
 	EventTypeMsgUpdateSessionInfo       = types.EventTypeMsgUpdateSessionInfo
-
+	
 	AttributeKeyClientAddress = types.AttributeKeyClientAddress
 	AttributeKeyFromAddress   = types.AttributeKeyFromAddress
 	AttributeKeyNodeID        = types.AttributeKeyNodeID

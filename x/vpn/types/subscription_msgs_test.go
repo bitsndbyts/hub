@@ -2,12 +2,13 @@ package types
 
 import (
 	"encoding/json"
-	"reflect"
 	"testing"
-
+	
+	"github.com/pkg/errors"
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -20,45 +21,45 @@ func TestMsgStartSubscription_ValidateBasic(t *testing.T) {
 		{
 			"from is nil",
 			NewMsgStartSubscription(nil, hub.NewResolverID(0), hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100)),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"from is empty",
 			NewMsgStartSubscription([]byte(""), hub.NewResolverID(0), hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100)),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"resolver id is nil",
 			NewMsgStartSubscription(TestAddress2, nil, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100)),
-			ErrorInvalidField("resolver"),
+			ErrInvalidField,
 		}, {
 			"resolver is empty",
 			NewMsgStartSubscription(TestAddress1, []byte(""), hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100)),
-			ErrorInvalidField("resolver"),
+			ErrInvalidField,
 		}, {
 			"node id is nil",
 			NewMsgStartSubscription(TestAddress1, hub.NewResolverID(0), nil, sdk.NewInt64Coin("stake", 100)),
-			ErrorInvalidField("node_id"),
+			ErrInvalidField,
 		}, {
 			"node id is empty",
 			NewMsgStartSubscription(TestAddress1, hub.NewResolverID(0), []byte(""), sdk.NewInt64Coin("stake", 100)),
-			ErrorInvalidField("node_id"),
+			ErrInvalidField,
 		}, {
 			"deposit is empty",
 			NewMsgStartSubscription(TestAddress1, hub.NewResolverID(0), hub.NewNodeID(1), sdk.Coin{}),
-			ErrorInvalidField("deposit"),
+			ErrInvalidField,
 		}, {
 			"deposit is zero",
 			NewMsgStartSubscription(TestAddress1, hub.NewResolverID(0), hub.NewNodeID(1), sdk.NewInt64Coin("stake", 0)),
-			ErrorInvalidField("deposit"),
+			ErrInvalidField,
 		}, {
 			"valid",
 			NewMsgStartSubscription(TestAddress1, hub.NewResolverID(0), hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100)),
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
+			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
 				t.Errorf("\ngot = %vwant = %v", got, tc.want)
 			}
 		})
@@ -71,7 +72,7 @@ func TestMsgStartSubscription_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -99,21 +100,21 @@ func TestMsgEndSubscription_ValidateBasic(t *testing.T) {
 		{
 			"from is nil",
 			NewMsgEndSubscription(nil, hub.NewSubscriptionID(1)),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"from is empty",
 			NewMsgEndSubscription([]byte(""), hub.NewSubscriptionID(1)),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"valid",
 			NewMsgEndSubscription(TestAddress1, hub.NewSubscriptionID(1)),
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
+			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
 				t.Errorf("\ngot = %vwant = %v", got, tc.want)
 			}
 		})
@@ -126,7 +127,7 @@ func TestMsgEndSubscription_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 

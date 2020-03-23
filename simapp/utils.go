@@ -2,7 +2,7 @@
 package simapp
 
 //
-//import (
+// import (
 //	"bytes"
 //	"encoding/binary"
 //	"encoding/json"
@@ -37,9 +37,9 @@ package simapp
 //	"github.com/sentinel-official/hub/x/vpn"
 //
 //	vpnsim "github.com/sentinel-official/hub/x/vpn/simulation"
-//)
+// )
 //
-//var (
+// var (
 //	genesisFile        string
 //	paramsFile         string
 //	exportParamsPath   string
@@ -58,19 +58,19 @@ package simapp
 //	onOperation        bool
 //	allInvariants      bool
 //	genesisTime        int64
-//)
+// )
 //
-//func NewSimAppUNSAFE(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
+// func NewSimAppUNSAFE(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 //	invCheckPeriod uint, baseAppOptions ...func(*baseapp.BaseApp),
-//) (gapp *SimApp, keyMain, keyStaking *sdk.KVStoreKey, stakingKeeper staking.Keeper) {
+// ) (gapp *SimApp, keyMain, keyStaking *sdk.KVStoreKey, stakingKeeper staking.Keeper) {
 //
 //	gapp = NewSimApp(logger, db, traceStore, loadLatest, invCheckPeriod, baseAppOptions...)
 //	return gapp, gapp.keys[baseapp.MainStoreKey], gapp.keys[staking.StoreKey], gapp.stakingKeeper
-//}
+// }
 //
-//func AppStateFromGenesisFileFn(
+// func AppStateFromGenesisFileFn(
 //	r io.Reader, cdc *codec.Codec, genesisFile string,
-//) (tmtypes.GenesisDoc, []simulation.Account) {
+// ) (tmtypes.GenesisDoc, []simulation.Account) {
 //
 //	bytes, err := ioutil.ReadFile(genesisFile)
 //	if err != nil {
@@ -101,9 +101,9 @@ package simapp
 //	}
 //
 //	return genesis, newAccs
-//}
+// }
 //
-//func GenAuthGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams, genesisState map[string]json.RawMessage) {
+// func GenAuthGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams, genesisState map[string]json.RawMessage) {
 //	authGenesis := auth.NewGenesisState(
 //		auth.NewParams(
 //			func(r *rand.Rand) uint64 {
@@ -151,9 +151,9 @@ package simapp
 //
 //	fmt.Printf("Selected randomly generated auth parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, authGenesis.Params))
 //	genesisState[auth.ModuleName] = cdc.MustMarshalJSON(authGenesis)
-//}
+// }
 //
-//func GenBankGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams, genesisState map[string]json.RawMessage) {
+// func GenBankGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams, genesisState map[string]json.RawMessage) {
 //	bankGenesis := bank.NewGenesisState(
 //		func(r *rand.Rand) bool {
 //			var v bool
@@ -167,9 +167,9 @@ package simapp
 //
 //	fmt.Printf("Selected randomly generated bank parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, bankGenesis))
 //	genesisState[bank.ModuleName] = cdc.MustMarshalJSON(bankGenesis)
-//}
+// }
 //
-//func GenSupplyGenesisState(cdc *codec.Codec, amount, numInitiallyBonded, numAccs int64, genesisState map[string]json.RawMessage) {
+// func GenSupplyGenesisState(cdc *codec.Codec, amount, numInitiallyBonded, numAccs int64, genesisState map[string]json.RawMessage) {
 //	totalSupply := sdk.NewInt(amount * (numAccs + numInitiallyBonded))
 //	supplyGenesis := supply.NewGenesisState(
 //		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, totalSupply)),
@@ -177,13 +177,13 @@ package simapp
 //
 //	fmt.Printf("Generated supply parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, supplyGenesis))
 //	genesisState[supply.ModuleName] = cdc.MustMarshalJSON(supplyGenesis)
-//}
+// }
 //
-//func GenGenesisAccounts(
+// func GenGenesisAccounts(
 //	cdc *codec.Codec, r *rand.Rand, accs []simulation.Account,
 //	genesisTimestamp time.Time, amount, numInitiallyBonded int64,
 //	genesisState map[string]json.RawMessage,
-//) {
+// ) {
 //
 //	var genesisAccounts []genaccounts.GenesisAccount
 //
@@ -232,9 +232,9 @@ package simapp
 //	}
 //
 //	genesisState[genaccounts.ModuleName] = cdc.MustMarshalJSON(genesisAccounts)
-//}
+// }
 //
-//func GenGovGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams, genesisState map[string]json.RawMessage) {
+// func GenGovGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams, genesisState map[string]json.RawMessage) {
 //	var vp time.Duration
 //	ap.GetOrGenerate(cdc, simulation.VotingParamsVotingPeriod, &vp, r,
 //		func(r *rand.Rand) {
@@ -285,9 +285,9 @@ package simapp
 //
 //	fmt.Printf("Selected randomly generated governance parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, govGenesis))
 //	genesisState[gov.ModuleName] = cdc.MustMarshalJSON(govGenesis)
-//}
+// }
 //
-//func GenMintGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams, genesisState map[string]json.RawMessage) {
+// func GenMintGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams, genesisState map[string]json.RawMessage) {
 //	mintGenesis := mint.NewGenesisState(
 //		mint.InitialMinter(
 //			func(r *rand.Rand) sdk.Dec {
@@ -339,9 +339,9 @@ package simapp
 //
 //	fmt.Printf("Selected randomly generated minting parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, mintGenesis.Params))
 //	genesisState[mint.ModuleName] = cdc.MustMarshalJSON(mintGenesis)
-//}
+// }
 //
-//func GenDistrGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams, genesisState map[string]json.RawMessage) {
+// func GenDistrGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams, genesisState map[string]json.RawMessage) {
 //	distrGenesis := distribution.GenesisState{
 //		FeePool: distribution.InitialFeePool(),
 //		CommunityTax: func(r *rand.Rand) sdk.Dec {
@@ -372,9 +372,9 @@ package simapp
 //
 //	fmt.Printf("Selected randomly generated distribution parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, distrGenesis))
 //	genesisState[distribution.ModuleName] = cdc.MustMarshalJSON(distrGenesis)
-//}
+// }
 //
-//func GenVpnGenesisState(cdc *codec.Codec, r *rand.Rand, accs []simulation.Account, ap simulation.AppParams, genesisState map[string]json.RawMessage) {
+// func GenVpnGenesisState(cdc *codec.Codec, r *rand.Rand, accs []simulation.Account, ap simulation.AppParams, genesisState map[string]json.RawMessage) {
 //	var (
 //		nodes         []vpn.Node
 //		subscriptions []vpn.Subscription
@@ -429,12 +429,12 @@ package simapp
 //	}
 //	fmt.Printf("Selected randomly generated slashing parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, vpnGenesis.Params))
 //	genesisState[vpn.ModuleName] = cdc.MustMarshalJSON(vpnGenesis)
-//}
+// }
 //
-//func GenSlashingGenesisState(
+// func GenSlashingGenesisState(
 //	cdc *codec.Codec, r *rand.Rand, stakingGen staking.GenesisState,
 //	ap simulation.AppParams, genesisState map[string]json.RawMessage,
-//) {
+// ) {
 //	slashingGenesis := slashing.NewGenesisState(
 //		slashing.NewParams(
 //			stakingGen.Params.UnbondingTime,
@@ -485,12 +485,12 @@ package simapp
 //
 //	fmt.Printf("Selected randomly generated slashing parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, slashingGenesis.Params))
 //	genesisState[slashing.ModuleName] = cdc.MustMarshalJSON(slashingGenesis)
-//}
+// }
 //
-//func GenStakingGenesisState(
+// func GenStakingGenesisState(
 //	cdc *codec.Codec, r *rand.Rand, accs []simulation.Account, amount, numAccs, numInitiallyBonded int64,
 //	ap simulation.AppParams, genesisState map[string]json.RawMessage,
-//) staking.GenesisState {
+// ) staking.GenesisState {
 //
 //	stakingGenesis := staking.NewGenesisState(
 //		staking.NewParams(
@@ -542,9 +542,9 @@ package simapp
 //	genesisState[staking.ModuleName] = cdc.MustMarshalJSON(stakingGenesis)
 //
 //	return stakingGenesis
-//}
+// }
 //
-//func GetSimulationLog(storeName string, cdcA, cdcB *codec.Codec, kvA, kvB cmn.KVPair) (log string) {
+// func GetSimulationLog(storeName string, cdcA, cdcB *codec.Codec, kvA, kvB cmn.KVPair) (log string) {
 //	log = fmt.Sprintf("store A %X => %X\nstore B %X => %X\n", kvA.Key, kvA.Value, kvB.Key, kvB.Value)
 //
 //	if len(kvA.Value) == 0 && len(kvB.Value) == 0 {
@@ -569,10 +569,10 @@ package simapp
 //	default:
 //		return
 //	}
-//}
+// }
 //
-//// DecodeAccountStore unmarshals the KVPair's Value to the corresponding auth type
-//func DecodeAccountStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.Pair) string {
+// // DecodeAccountStore unmarshals the KVPair's Value to the corresponding auth type
+// func DecodeAccountStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.Pair) string {
 //	switch {
 //	case bytes.Equal(kvA.Key[:1], auth.AddressStoreKeyPrefix):
 //		var accA, accB auth.Account
@@ -587,9 +587,9 @@ package simapp
 //	default:
 //		panic(fmt.Sprintf("invalid account key %X", kvA.Key))
 //	}
-//}
+// }
 //
-//func DecodeMintStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.Pair) string {
+// func DecodeMintStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.Pair) string {
 //	switch {
 //	case bytes.Equal(kvA.Key, mint.MinterKey):
 //		var minterA, minterB mint.Minter
@@ -599,9 +599,9 @@ package simapp
 //	default:
 //		panic(fmt.Sprintf("invalid mint key %X", kvA.Key))
 //	}
-//}
+// }
 //
-//func DecodeDistributionStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.Pair) string {
+// func DecodeDistributionStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.Pair) string {
 //	switch {
 //	case bytes.Equal(kvA.Key[:1], distribution.FeePoolKey):
 //		var feePoolA, feePoolB distribution.FeePool
@@ -654,9 +654,9 @@ package simapp
 //	default:
 //		panic(fmt.Sprintf("invalid distribution key prefix %X", kvA.Key[:1]))
 //	}
-//}
+// }
 //
-//func DecodeStakingStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.Pair) string {
+// func DecodeStakingStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.Pair) string {
 //	switch {
 //	case bytes.Equal(kvA.Key[:1], staking.LastTotalPowerKey):
 //		var powerA, powerB sdk.Int
@@ -698,9 +698,9 @@ package simapp
 //	default:
 //		panic(fmt.Sprintf("invalid staking key prefix %X", kvA.Key[:1]))
 //	}
-//}
+// }
 //
-//func DecodeSlashingStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.Pair) string {
+// func DecodeSlashingStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.Pair) string {
 //	switch {
 //	case bytes.Equal(kvA.Key[:1], slashing.ValidatorSigningInfoKey):
 //		var infoA, infoB slashing.ValidatorSigningInfo
@@ -726,9 +726,9 @@ package simapp
 //	default:
 //		panic(fmt.Sprintf("invalid slashing key prefix %X", kvA.Key[:1]))
 //	}
-//}
+// }
 //
-//func DecodeGovStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.Pair) string {
+// func DecodeGovStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.Pair) string {
 //	switch {
 //	case bytes.Equal(kvA.Key[:1], gov.ProposalsKeyPrefix):
 //		var proposalA, proposalB gov.Proposal
@@ -758,9 +758,9 @@ package simapp
 //	default:
 //		panic(fmt.Sprintf("invalid governance key prefix %X", kvA.Key[:1]))
 //	}
-//}
+// }
 //
-//func DecodeSupplyStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.Pair) string {
+// func DecodeSupplyStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.Pair) string {
 //	switch {
 //	case bytes.Equal(kvA.Key[:1], supply.SupplyKey):
 //		var supplyA, supplyB supply.Supply
@@ -770,4 +770,4 @@ package simapp
 //	default:
 //		panic(fmt.Sprintf("invalid supply key %X", kvA.Key))
 //	}
-//}
+// }

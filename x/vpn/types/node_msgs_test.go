@@ -2,13 +2,14 @@ package types
 
 import (
 	"encoding/json"
-	"reflect"
 	"strings"
 	"testing"
-
+	
+	"github.com/pkg/errors"
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -21,61 +22,61 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 		{
 			"from is nil",
 			NewMsgRegisterNode(nil, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"from is empty",
 			NewMsgRegisterNode([]byte(""), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"node_type is empty",
 			NewMsgRegisterNode(TestAddress1, "", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
-			ErrorInvalidField("type"),
+			ErrInvalidField,
 		}, {
 			"version is empty",
 			NewMsgRegisterNode(TestAddress1, "node_type", "", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
-			ErrorInvalidField("version"),
+			ErrInvalidField,
 		}, {
 			"node_moniker length is greater than 128",
 			NewMsgRegisterNode(TestAddress1, "node_type", "version", strings.Repeat("X", 130), sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
-			ErrorInvalidField("moniker"),
+			ErrInvalidField,
 		}, {
 			"prices_per_gb is nil",
 			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", nil, TestBandwidthPos1, "encryption"),
-			ErrorInvalidField("prices_per_gb"),
+			ErrInvalidField,
 		}, {
 			"prices_per_gb is empty",
 			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{}, TestBandwidthPos1, "encryption"),
-			ErrorInvalidField("prices_per_gb"),
+			ErrInvalidField,
 		}, {
 			"prices_per_gb is negative",
 			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-100)}}, TestBandwidthPos1, "encryption"),
-			ErrorInvalidField("prices_per_gb"),
+			ErrInvalidField,
 		}, {
 			"prices_per_gb is zero",
 			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 0)}, TestBandwidthPos1, "encryption"),
-			ErrorInvalidField("prices_per_gb"),
+			ErrInvalidField,
 		}, {
 			"internet_speed is negative",
 			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthNeg, "encryption"),
-			ErrorInvalidField("internet_speed"),
+			ErrInvalidField,
 		}, {
 			"internet_speed is zero",
 			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthZero, "encryption"),
-			ErrorInvalidField("internet_speed"),
+			ErrInvalidField,
 		}, {
 			"encryption is empty",
 			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, ""),
-			ErrorInvalidField("encryption"),
+			ErrInvalidField,
 		}, {
 			"valid",
 			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
+			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
 				t.Errorf("\ngot = %vwant = %v", got, tc.want)
 			}
 		})
@@ -88,7 +89,7 @@ func TestMsgRegisterNode_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -116,15 +117,15 @@ func TestMsgUpdateNodeInfo_ValidateBasic(t *testing.T) {
 		{
 			"from is nil",
 			NewMsgUpdateNodeInfo(nil, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"from is empty",
 			NewMsgUpdateNodeInfo([]byte(""), hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"node_moniker length is greater than 128",
 			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", strings.Repeat("X", 130), sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
-			ErrorInvalidField("moniker"),
+			ErrInvalidField,
 		}, {
 			"prices_per_gb is nil",
 			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", nil, TestBandwidthPos1, "encryption"),
@@ -132,15 +133,15 @@ func TestMsgUpdateNodeInfo_ValidateBasic(t *testing.T) {
 		}, {
 			"prices_per_gb is empty",
 			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{}, TestBandwidthPos1, "encryption"),
-			ErrorInvalidField("prices_per_gb"),
+			ErrInvalidField,
 		}, {
 			"prices_per_gb is negative",
 			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-100)}}, TestBandwidthPos1, "encryption"),
-			ErrorInvalidField("prices_per_gb"),
+			ErrInvalidField,
 		}, {
 			"prices_per_gb is zero",
 			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 0)}, TestBandwidthPos1, "encryption"),
-			ErrorInvalidField("prices_per_gb"),
+			ErrInvalidField,
 		}, {
 			"internet_speed is zero",
 			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthZero, "encryption"),
@@ -148,7 +149,7 @@ func TestMsgUpdateNodeInfo_ValidateBasic(t *testing.T) {
 		}, {
 			"internet_speed is negative",
 			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthNeg, "encryption"),
-			ErrorInvalidField("internet_speed"),
+			ErrInvalidField,
 		}, {
 			"encryption is empty",
 			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, ""),
@@ -167,10 +168,10 @@ func TestMsgUpdateNodeInfo_ValidateBasic(t *testing.T) {
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
+			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
 				t.Errorf("\ngot = %vwant = %v", got, tc.want)
 			}
 		})
@@ -183,7 +184,7 @@ func TestMsgUpdateNode_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -211,33 +212,33 @@ func TestMsgAddFreeClient_ValidateBasic(t *testing.T) {
 		{
 			"from is nil",
 			NewMsgAddFreeClient(nil, hub.NewNodeID(1), TestAddress1),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"from is empty",
 			NewMsgAddFreeClient([]byte(""), hub.NewNodeID(1), TestAddress1),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"node_id is nil",
 			NewMsgAddFreeClient(TestAddress1, nil, TestAddress1),
-			ErrorInvalidField("node_id"),
+			ErrInvalidField,
 		}, {
 			"client is nil",
 			NewMsgAddFreeClient(TestAddress1, hub.NewNodeID(1), nil),
-			ErrorInvalidField("client"),
+			ErrInvalidField,
 		}, {
 			"client is empty",
 			NewMsgAddFreeClient(TestAddress1, hub.NewNodeID(1), []byte("")),
-			ErrorInvalidField("client"),
+			ErrInvalidField,
 		}, {
 			"valid",
 			NewMsgAddFreeClient(TestAddress1, hub.NewNodeID(1), TestAddress1),
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
+			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
 				t.Errorf("\ngot = %vwant = %v", got, tc.want)
 			}
 		})
@@ -250,7 +251,7 @@ func TestMsgAddFreeClient_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -278,33 +279,33 @@ func TestMsgRemoveFreeClient_ValidateBasic(t *testing.T) {
 		{
 			"from is nil",
 			NewMsgRemoveFreeClient(nil, hub.NewNodeID(1), TestAddress1),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"from is empty",
 			NewMsgRemoveFreeClient([]byte(""), hub.NewNodeID(1), TestAddress1),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"node_id is nil",
 			NewMsgRemoveFreeClient(TestAddress1, nil, TestAddress1),
-			ErrorInvalidField("node_id"),
+			ErrInvalidField,
 		}, {
 			"client is nil",
 			NewMsgRemoveFreeClient(TestAddress1, hub.NewNodeID(1), nil),
-			ErrorInvalidField("client"),
+			ErrInvalidField,
 		}, {
 			"client is empty",
 			NewMsgRemoveFreeClient(TestAddress1, hub.NewNodeID(1), []byte("")),
-			ErrorInvalidField("client"),
+			ErrInvalidField,
 		}, {
 			"valid",
 			NewMsgRemoveFreeClient(TestAddress1, hub.NewNodeID(1), TestAddress1),
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
+			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
 				t.Errorf("\ngot = %vwant = %v", got, tc.want)
 			}
 		})
@@ -317,7 +318,7 @@ func TestMsgRemoveFreeClient_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -336,7 +337,7 @@ func TestMsgRemoveFreeClient_Route(t *testing.T) {
 	require.Equal(t, RouterKey, msg.Route())
 }
 
-func TestMsgAddVPNOnResolver_ValidateBasic(t *testing.T) {
+func TestMsgAddVPNOnResolver_ValidateBasic(t *testing.T) { // TODO : Validate Basic
 	tests := []struct {
 		name string
 		msg  *MsgRegisterVPNOnResolver
@@ -345,29 +346,29 @@ func TestMsgAddVPNOnResolver_ValidateBasic(t *testing.T) {
 		{
 			"from is nil",
 			NewMsgRegisterVPNOnResolver(nil, hub.NewNodeID(1), hub.NewResolverID(0)),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"from is empty",
 			NewMsgRegisterVPNOnResolver([]byte(""), hub.NewNodeID(1), hub.NewResolverID(0)),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"node_id is nil",
 			NewMsgRegisterVPNOnResolver(TestAddress1, nil, hub.NewResolverID(0)),
-			ErrorInvalidField("node_id"),
+			ErrInvalidField,
 		}, {
 			"resolver is nil",
 			NewMsgRegisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), nil),
-			ErrorInvalidField("resolver"),
+			ErrInvalidField,
 		}, {
 			"valid",
 			NewMsgRegisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0)),
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
+			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
 				t.Errorf("\ngot = %vwant = %v", got, tc.want)
 			}
 		})
@@ -380,7 +381,7 @@ func TestMsgRegisterVPNOnResolver_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -408,29 +409,29 @@ func TestMsgDeregisterVPNOnResolver_ValidateBasic(t *testing.T) {
 		{
 			"from is nil",
 			NewMsgDeregisterVPNOnResolver(nil, hub.NewNodeID(1), hub.NewResolverID(0)),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"from is empty",
 			NewMsgDeregisterVPNOnResolver([]byte(""), hub.NewNodeID(1), hub.NewResolverID(0)),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"node_id is nil",
 			NewMsgDeregisterVPNOnResolver(TestAddress1, nil, hub.NewResolverID(0)),
-			ErrorInvalidField("node_id"),
+			ErrInvalidField,
 		}, {
 			"resolver is nil",
 			NewMsgDeregisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), nil),
-			ErrorInvalidField("resolver"),
+			ErrInvalidField,
 		}, {
 			"valid",
 			NewMsgDeregisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0)),
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
+			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
 				t.Errorf("\ngot = %vwant = %v", got, tc.want)
 			}
 		})
@@ -443,7 +444,7 @@ func TestMsgDeregisterVPNOnResolver_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -471,21 +472,21 @@ func TestMsgDeregisterNode_ValidateBasic(t *testing.T) {
 		{
 			"from is nil",
 			NewMsgDeregisterNode(nil, hub.NewNodeID(1)),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"from is empty",
 			NewMsgDeregisterNode([]byte(""), hub.NewNodeID(1)),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"valid",
 			NewMsgDeregisterNode(TestAddress1, hub.NewNodeID(1)),
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
+			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
 				t.Errorf("\ngot = %vwant = %v", got, tc.want)
 			}
 		})
@@ -498,7 +499,7 @@ func TestMsgDeregisterNode_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 

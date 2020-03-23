@@ -1,8 +1,8 @@
 package simapp
 
-//TODO : Simulations
+// TODO : Simulations
 //
-//import (
+// import (
 //	"encoding/json"
 //	"flag"
 //	"fmt"
@@ -28,9 +28,9 @@ package simapp
 //
 //	"github.com/sentinel-official/hub/x/vpn"
 //	vpnsim "github.com/sentinel-official/hub/x/vpn/simulation"
-//)
+// )
 //
-//func init() {
+// func init() {
 //	flag.StringVar(&genesisFile, "Genesis", "", "custom simulation genesis file; cannot be used with params file")
 //	flag.StringVar(&paramsFile, "Params", "", "custom simulation params file which overrides any random params; cannot be used with genesis")
 //	flag.StringVar(&exportParamsPath, "ExportParamsPath", "", "custom file path to save the exported params JSON")
@@ -49,9 +49,9 @@ package simapp
 //	flag.BoolVar(&onOperation, "SimulateEveryOperation", false, "run slow invariants every operation")
 //	flag.BoolVar(&allInvariants, "PrintAllInvariants", false, "print all invariants if a broken invariant is found")
 //	flag.Int64Var(&genesisTime, "GenesisTime", 0, "override genesis UNIX time instead of using a random UNIX time")
-//}
+// }
 //
-//func getSimulateFromSeedInput(tb testing.TB, w io.Writer, app *SimApp) (
+// func getSimulateFromSeedInput(tb testing.TB, w io.Writer, app *SimApp) (
 //	testing.TB, io.Writer, *baseapp.BaseApp, simulation.AppStateFn, int64,
 //	simulation.WeightedOperations, sdk.Invariants, int, int, int, int, string,
 //	bool, bool, bool, bool, bool, map[string]bool) {
@@ -62,11 +62,11 @@ package simapp
 //		testAndRunTxs(app), invariants(app),
 //		initialBlockHeight, numBlocks, exportParamsHeight, blockSize,
 //		exportStatsPath, exportParams, commit, lean, onOperation, allInvariants, app.ModuleAccountAddrs()
-//}
+// }
 //
-//func appStateFn(
+// func appStateFn(
 //	r *rand.Rand, accs []simulation.Account,config simulation.Config,
-//) (appState json.RawMessage, simAccs []simulation.Account, chainID string, genesisTimestamp time.Time) {
+// ) (appState json.RawMessage, simAccs []simulation.Account, chainID string, genesisTimestamp time.Time) {
 //
 //	cdc := MakeCodec()
 //
@@ -99,11 +99,11 @@ package simapp
 //	}
 //
 //	return appState, simAccs, chainID, genesisTimestamp
-//}
+// }
 //
-//func appStateRandomizedFn(
+// func appStateRandomizedFn(
 //	r *rand.Rand, accs []simulation.Account, genesisTimestamp time.Time, appParams simulation.AppParams,
-//) (json.RawMessage, []simulation.Account, string) {
+// ) (json.RawMessage, []simulation.Account, string) {
 //
 //	cdc := MakeCodec()
 //	genesisState := NewDefaultGenesisState()
@@ -125,11 +125,11 @@ package simapp
 //
 //	fmt.Printf(
 //		`Selected randomly generated parameters for simulated genesis:
-//{
+// {
 //  stake_per_account: "%v",
 //  initially_bonded_validators: "%v"
-//}
-//`, amount, numInitiallyBonded,
+// }
+// `, amount, numInitiallyBonded,
 //	)
 //
 //	GenGenesisAccounts(cdc, r, accs, genesisTimestamp, amount, numInitiallyBonded, genesisState)
@@ -149,9 +149,9 @@ package simapp
 //	}
 //
 //	return appState, accs, "simulation"
-//}
+// }
 //
-//func testAndRunTxs(app *SimApp) []simulation.WeightedOperation {
+// func testAndRunTxs(app *SimApp) []simulation.WeightedOperation {
 //
 //	cdc := MakeCodec()
 //	ap := make(simulation.AppParams)
@@ -244,21 +244,21 @@ package simapp
 //			vpnsim.SimulateEndBlock(app.vpnKeeper),
 //		},
 //	}
-//}
+// }
 //
-//func invariants(app *SimApp) []sdk.Invariant {
+// func invariants(app *SimApp) []sdk.Invariant {
 //	if period == 1 {
 //		return app.crisisKeeper.Invariants()
 //	}
 //	return simulation.PeriodicInvariants(app.crisisKeeper.Invariants(), period, 0)
-//}
+// }
 //
-//func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
+// func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
 //	bapp.SetFauxMerkleMode()
-//}
+// }
 //
-//// /usr/local/go/bin/go test -benchmem -run=^$ github.com/cosmos/cosmos-sdk/simapp -bench ^BenchmarkFullAppSimulation$ -Commit=true -cpuprofile cpu.out
-//func BenchmarkFullAppSimulation(b *testing.B) {
+// // /usr/local/go/bin/go test -benchmem -run=^$ github.com/cosmos/cosmos-sdk/simapp -bench ^BenchmarkFullAppSimulation$ -Commit=true -cpuprofile cpu.out
+// func BenchmarkFullAppSimulation(b *testing.B) {
 //	logger := log.NewNopLogger()
 //
 //	var db dbm.DB
@@ -311,9 +311,9 @@ package simapp
 //		fmt.Println(db.Stats()["leveldb.stats"])
 //		fmt.Println("GoLevelDB cached block size", db.Stats()["leveldb.cachedblock"])
 //	}
-//}
+// }
 //
-//func TestFullAppSimulation(t *testing.T) {
+// func TestFullAppSimulation(t *testing.T) {
 //	if !enabled {
 //		t.Skip("Skipping application simulation")
 //	}
@@ -370,9 +370,9 @@ package simapp
 //		fmt.Println(db.Stats()["leveldb.stats"])
 //		fmt.Println("GoLevelDB cached block size", db.Stats()["leveldb.cachedblock"])
 //	}
-//}
+// }
 //
-//func TestAppImportExport(t *testing.T) {
+// func TestAppImportExport(t *testing.T) {
 //	if !enabled {
 //		t.Skip("Skipping application import/export simulation")
 //	}
@@ -481,9 +481,9 @@ package simapp
 //		require.True(t, equal, GetSimulationLog(storeKeyA.Name(), app.cdc, newApp.cdc, kvA, kvB))
 //	}
 //
-//}
+// }
 //
-//func TestAppSimulationAfterImport(t *testing.T) {
+// func TestAppSimulationAfterImport(t *testing.T) {
 //	if !enabled {
 //		t.Skip("Skipping application simulation after import")
 //	}
@@ -564,9 +564,9 @@ package simapp
 //
 //	_, _, err = simulation.SimulateFromSeed(getSimulateFromSeedInput(t, os.Stdout, newApp))
 //	require.Nil(t, err)
-//}
+// }
 //
-//func TestAppStateDeterminism(t *testing.T) {
+// func TestAppStateDeterminism(t *testing.T) {
 //	if !enabled {
 //		t.Skip("Skipping application simulation")
 //	}
@@ -604,9 +604,9 @@ package simapp
 //			require.Equal(t, appHashList[0], appHashList[k], "appHash list: %v", appHashList)
 //		}
 //	}
-//}
+// }
 //
-//func BenchmarkInvariants(b *testing.B) {
+// func BenchmarkInvariants(b *testing.B) {
 //	logger := log.NewNopLogger()
 //	dir, _ := ioutil.TempDir("", "goleveldb-app-invariant-bench")
 //	db, _ := sdk.NewLevelDB("simulation", dir)
@@ -669,4 +669,4 @@ package simapp
 //			}
 //		})
 //	}
-//}
+// }

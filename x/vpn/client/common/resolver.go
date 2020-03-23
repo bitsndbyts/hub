@@ -2,9 +2,9 @@ package common
 
 import (
 	"fmt"
-
+	
 	"github.com/cosmos/cosmos-sdk/client/context"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
@@ -12,9 +12,9 @@ import (
 func QueryResolvers(ctx context.CLIContext, resolverID string) (types.Resolvers, error) {
 	var res []byte
 	var err error
-
+	
 	if resolverID != "" {
-
+		
 		_id, err := hub.NewResolverIDFromString(resolverID)
 		if err != nil {
 			return nil, err
@@ -33,15 +33,15 @@ func QueryResolvers(ctx context.CLIContext, resolverID string) (types.Resolvers,
 			return nil, err
 		}
 	}
-
+	
 	var resolvers types.Resolvers
 	if res == nil {
 		return nil, fmt.Errorf("resolvers doesnot exist")
 	}
-
+	
 	if err := ctx.Codec.UnmarshalJSON(res, &resolvers); err != nil {
 		return nil, err
 	}
-
+	
 	return resolvers, nil
 }

@@ -2,9 +2,9 @@ package types
 
 import (
 	"encoding/json"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -28,7 +28,7 @@ func (msg MsgRegisterResolver) ValidateBasic() error {
 	if msg.Commission.LT(sdk.ZeroDec()) || msg.Commission.GT(sdk.OneDec()) {
 		return ErrorInvalidField("commission")
 	}
-
+	
 	return nil
 }
 
@@ -70,11 +70,11 @@ func (msg MsgUpdateResolverInfo) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-
+	
 	if msg.Commission.LT(sdk.ZeroDec()) || msg.Commission.GT(sdk.OneDec()) {
 		return ErrorInvalidField("commission")
 	}
-
+	
 	return nil
 }
 
@@ -83,7 +83,7 @@ func (msg MsgUpdateResolverInfo) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -118,7 +118,7 @@ func (msg MsgDeregisterResolver) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-
+	
 	return nil
 }
 
@@ -127,7 +127,7 @@ func (msg MsgDeregisterResolver) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 

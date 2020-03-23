@@ -2,12 +2,13 @@ package types
 
 import (
 	"encoding/json"
-	"reflect"
 	"testing"
-
+	
+	"github.com/pkg/errors"
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/deposit/types"
 )
@@ -18,7 +19,7 @@ func TestMsgRegisterResolver_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -46,19 +47,19 @@ func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
 		{
 			"from is nil",
 			NewMsgRegisterResolver(nil, sdk.NewDecWithPrec(2, 1)),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"from is empty",
 			NewMsgRegisterResolver([]byte(""), sdk.OneDec()),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"commission is negative",
 			NewMsgRegisterResolver(TestAddress1, sdk.NewDecWithPrec(-1, 0)),
-			ErrorInvalidField("commission"),
+			ErrInvalidField,
 		}, {
 			"commission is grater than 1",
 			NewMsgRegisterResolver(TestAddress2, sdk.NewDecWithPrec(2, 0)),
-			ErrorInvalidField("commission"),
+			ErrInvalidField,
 		}, {
 			"commission with zero",
 			NewMsgRegisterResolver(TestAddress2, sdk.NewDecWithPrec(0, 0)),
@@ -69,11 +70,11 @@ func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
-				t.Errorf("\ngot = %v, want %v", got, tc.want)
+			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
+				t.Errorf("\ngot = %vwant = %v", got, tc.want)
 			}
 		})
 	}
@@ -85,7 +86,7 @@ func TestMsgUpdateResolverInfo_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -113,23 +114,23 @@ func TestMsgUpdateResolverInfo_ValidateBasic(t *testing.T) {
 		{
 			"from is nil",
 			NewMsgUpdateResolverInfo(nil, hub.NewResolverID(0), sdk.NewDecWithPrec(2, 1)),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"from is empty",
 			NewMsgUpdateResolverInfo([]byte(""), hub.NewResolverID(0), sdk.OneDec()),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"id is nil",
 			NewMsgUpdateResolverInfo(nil, nil, sdk.NewDecWithPrec(2, 1)),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"commission is negative",
 			NewMsgUpdateResolverInfo(TestAddress1, hub.NewResolverID(0), sdk.NewDecWithPrec(-1, 0)),
-			ErrorInvalidField("commission"),
+			ErrInvalidField,
 		}, {
 			"commission is grater than 1",
 			NewMsgUpdateResolverInfo(TestAddress2, hub.NewResolverID(0), sdk.NewDecWithPrec(2, 0)),
-			ErrorInvalidField("commission"),
+			ErrInvalidField,
 		}, {
 			"commission with zero",
 			NewMsgUpdateResolverInfo(TestAddress2, hub.NewResolverID(0), sdk.NewDecWithPrec(0, 0)),
@@ -142,8 +143,8 @@ func TestMsgUpdateResolverInfo_ValidateBasic(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
-				t.Errorf("got = %v, want %v", got, tc.want)
+			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
+				t.Errorf("\ngot = %vwant = %v", got, tc.want)
 			}
 		})
 	}
@@ -155,7 +156,7 @@ func TestMsgDeregisterResolver_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -183,25 +184,25 @@ func TestMsgDeregisterResolver_ValidateBasic(t *testing.T) {
 		{
 			"from is nil",
 			NewMsgDeregisterResolver(nil, hub.NewResolverID(0)),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"from is empty",
 			NewMsgDeregisterResolver([]byte(""), hub.NewResolverID(0)),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"id is empty",
 			NewMsgDeregisterResolver([]byte(""), nil),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"valid input",
 			NewMsgDeregisterResolver(types.TestAddress1, hub.NewResolverID(0)),
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
+			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
 				t.Errorf("\ngot = %vwant = %v", got, tc.want)
 			}
 		})

@@ -2,8 +2,9 @@ package querier
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
-
+	
 	"github.com/sentinel-official/hub/x/vpn/keeper"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
@@ -11,69 +12,69 @@ import (
 func querySession(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
 	var params types.QuerySessionParams
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
-		return nil, types.ErrorUnmarshal()
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
-
+	
 	session, found := k.GetSession(ctx, params.ID)
 	if !found {
 		return nil, nil
 	}
-
+	
 	res, err := types.ModuleCdc.MarshalJSON(session)
 	if err != nil {
-		return nil, types.ErrorMarshal()
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
-
+	
 	return res, nil
 }
 
 func querySessionOfSubscription(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
 	var params types.QuerySessionOfSubscriptionPrams
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
-		return nil, types.ErrorUnmarshal()
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
-
+	
 	id, found := k.GetSessionIDBySubscriptionID(ctx, params.ID, params.Index)
 	if !found {
 		return nil, nil
 	}
-
+	
 	session, found := k.GetSession(ctx, id)
 	if !found {
 		return nil, nil
 	}
-
+	
 	res, err := types.ModuleCdc.MarshalJSON(session)
 	if err != nil {
-		return nil, types.ErrorMarshal()
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
-
+	
 	return res, nil
 }
 
 func querySessionsOfSubscription(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
 	var params types.QuerySessionsOfSubscriptionPrams
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
-		return nil, types.ErrorUnmarshal()
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
-
+	
 	sessions := k.GetSessionsOfSubscription(ctx, params.ID)
-
+	
 	res, err := types.ModuleCdc.MarshalJSON(sessions)
 	if err != nil {
-		return nil, types.ErrorMarshal()
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
-
+	
 	return res, nil
 }
 
 func queryAllSessions(ctx sdk.Context, k keeper.Keeper) ([]byte, error) {
 	sessions := k.GetAllSessions(ctx)
-
+	
 	res, err := types.ModuleCdc.MarshalJSON(sessions)
 	if err != nil {
-		return nil, types.ErrorMarshal()
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
-
+	
 	return res, nil
 }

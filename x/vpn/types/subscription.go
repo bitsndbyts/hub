@@ -2,9 +2,9 @@ package types
 
 import (
 	"fmt"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -25,7 +25,7 @@ func (s Subscription) TotalBandwidth() hub.Bandwidth {
 	x := s.TotalDeposit.Amount.
 		Mul(hub.MB500).
 		Quo(s.PricePerGB.Amount)
-
+	
 	return hub.NewBandwidth(x, x)
 }
 
@@ -71,6 +71,6 @@ func (s Subscription) IsValid() error {
 	if s.Status != StatusActive && s.Status != StatusInactive {
 		return fmt.Errorf("invalid status")
 	}
-
+	
 	return nil
 }

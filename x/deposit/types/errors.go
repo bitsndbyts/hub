@@ -1,6 +1,9 @@
 package types
 
 import (
+	"fmt"
+	
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -10,6 +13,14 @@ const (
 )
 
 var (
-	ErrorInvalidQueryType         = sdkerrors.Register(ModuleName, errCodeUnknownQueryType, "Invalid query type: ")
-	ErrorInsufficientDepositFunds = sdkerrors.Register(ModuleName, errCodeInsufficientDepositFunds, "insufficient funds")
+	ErrInvalidQueryType         = sdkerrors.Register(ModuleName, errCodeUnknownQueryType, "Invalid query type: ")
+	ErrInsufficientDepositFunds = sdkerrors.Register(ModuleName, errCodeInsufficientDepositFunds, "insufficient funds")
 )
+
+func ErrorInvalidQueryType(queryType string) error {
+	return sdkerrors.Wrapf(ErrInvalidQueryType, queryType)
+}
+
+func ErrorInsufficientDepositFunds(x, y sdk.Coins) error {
+	return sdkerrors.Wrapf(ErrInsufficientDepositFunds, fmt.Sprintf("insufficient deposit funds: %s < %s", x, y))
+}

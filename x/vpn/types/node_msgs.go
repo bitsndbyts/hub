@@ -2,9 +2,9 @@ package types
 
 import (
 	"encoding/json"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -47,7 +47,7 @@ func (msg MsgRegisterNode) ValidateBasic() error {
 	if msg.Encryption == "" {
 		return ErrorInvalidField("encryption")
 	}
-
+	
 	return nil
 }
 
@@ -56,7 +56,7 @@ func (msg MsgRegisterNode) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -113,7 +113,7 @@ func (msg MsgUpdateNodeInfo) ValidateBasic() error {
 	if msg.InternetSpeed.AnyNegative() {
 		return ErrorInvalidField("internet_speed")
 	}
-
+	
 	return nil
 }
 
@@ -122,7 +122,7 @@ func (msg MsgUpdateNodeInfo) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -171,7 +171,7 @@ func (msg MsgAddFreeClient) ValidateBasic() error {
 	if msg.Client == nil || msg.Client.Empty() {
 		return ErrorInvalidField("client")
 	}
-
+	
 	return nil
 }
 
@@ -180,7 +180,7 @@ func (msg MsgAddFreeClient) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -222,7 +222,7 @@ func (msg MsgRemoveFreeClient) ValidateBasic() error {
 	if msg.Client == nil || msg.Client.Empty() {
 		return ErrorInvalidField("client")
 	}
-
+	
 	return nil
 }
 
@@ -231,7 +231,7 @@ func (msg MsgRemoveFreeClient) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -273,7 +273,7 @@ func (msg MsgRegisterVPNOnResolver) ValidateBasic() error {
 	if msg.ResolverID == nil {
 		return ErrorInvalidField("resolver")
 	}
-
+	
 	return nil
 }
 
@@ -282,7 +282,7 @@ func (msg MsgRegisterVPNOnResolver) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -325,7 +325,7 @@ func (msg MsgDeregisterVPNOnResolver) ValidateBasic() error {
 	if msg.ResolverID == nil {
 		return ErrorInvalidField("resolver")
 	}
-
+	
 	return nil
 }
 
@@ -334,7 +334,7 @@ func (msg MsgDeregisterVPNOnResolver) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -370,7 +370,7 @@ func (msg MsgDeregisterNode) ValidateBasic() error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-
+	
 	return nil
 }
 
@@ -379,7 +379,7 @@ func (msg MsgDeregisterNode) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 

@@ -3,6 +3,7 @@ package types
 import (
 	"errors"
 	"fmt"
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/params/subspace"
@@ -66,7 +67,7 @@ func (p Params) Validate() error {
 	if p.SessionInactiveInterval < 0 {
 		return fmt.Errorf("SessionInactiveInterval: %d should be positive interger", p.SessionInactiveInterval)
 	}
-
+	
 	return nil
 }
 
@@ -75,11 +76,11 @@ func validateFreeNodeCount(i interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-
+	
 	if v == 0 {
 		return fmt.Errorf("max validators must be positive: %d", v)
 	}
-
+	
 	return nil
 }
 
@@ -88,11 +89,11 @@ func validateSessionInactiveInterval(i interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-
+	
 	if v == 0 {
 		return fmt.Errorf("max validators must be positive: %d", v)
 	}
-
+	
 	return nil
 }
 
@@ -101,14 +102,14 @@ func validateDeposit(i interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-
+	
 	if v.IsZero() || v.IsNegative() {
 		return errors.New("deposit amount cannot be blank")
 	}
-
+	
 	if v.Amount.LT(sdk.NewInt(100)) { // TODO : verify amount ??
 		return errors.New("deposit amount should be greater than 100")
 	}
-
+	
 	return nil
 }

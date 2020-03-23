@@ -2,13 +2,14 @@ package types
 
 import (
 	"encoding/json"
-	"reflect"
 	"testing"
-
+	
+	"github.com/pkg/errors"
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/stretchr/testify/require"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -21,41 +22,41 @@ func TestMsgUpdateSessionInfo_ValidateBasic(t *testing.T) {
 		{
 			"from is nil",
 			NewMsgUpdateSessionInfo(nil, hub.NewSubscriptionID(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"from is empty",
 			NewMsgUpdateSessionInfo([]byte(""), hub.NewSubscriptionID(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
-			ErrorInvalidField("from"),
+			ErrInvalidField,
 		}, {
 			"bandwidth is zero",
 			NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthZero, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
-			ErrorInvalidField("bandwidth"),
+			ErrInvalidField,
 		}, {
 			"bandwidth is neg",
 			NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthNeg, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
-			ErrorInvalidField("bandwidth"),
+			ErrInvalidField,
 		}, {
 			"bandwidth is zero",
 			NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthZero, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
-			ErrorInvalidField("bandwidth"),
+			ErrInvalidField,
 		}, {
 			"node owner sign is empty  ",
 			NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthPos1, auth.StdSignature{}, TestClientStdSignaturePos1),
-			ErrorInvalidField("node_owner_signature"),
+			ErrInvalidField,
 		}, {
 			"client sign is empty  ",
 			NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, auth.StdSignature{}),
-			ErrorInvalidField("client_signature"),
+			ErrInvalidField,
 		}, {
 			"valid ",
 			NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
+			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
 				t.Errorf("\ngot = %vwant = %v", got, tc.want)
 			}
 		})
@@ -68,7 +69,7 @@ func TestMsgUpdateSessionInfo_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 

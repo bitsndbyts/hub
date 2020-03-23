@@ -2,85 +2,86 @@ package querier
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/vpn/types"
-
+	
 	"github.com/sentinel-official/hub/x/vpn/keeper"
 )
 
 func queryResolvers(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
 	var id hub.ResolverID
 	var resolvers []types.Resolver
-
+	
 	if len(req.Data) != 0 {
 		if err := types.ModuleCdc.UnmarshalJSON(req.Data, &id); err != nil {
-			return nil, types.ErrorUnmarshal()
+			return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 		}
-
+		
 		resolver, found := k.GetResolver(ctx, id)
 		if !found {
 			return nil, types.ErrorResolverDoesNotExist()
 		}
-
+		
 		resolvers = append(resolvers, resolver)
 	} else {
 		resolvers = k.GetAllResolvers(ctx)
 	}
-
+	
 	res, err := types.ModuleCdc.MarshalJSON(resolvers)
 	if err != nil {
-		return nil, types.ErrorMarshal()
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 	return res, nil
 }
 
 func queryResolversOfAddress(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
 	var address sdk.AccAddress
-
+	
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &address); err != nil {
-		return nil, types.ErrorUnmarshal()
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
-
+	
 	resolvers := k.GetResolversOfAddress(ctx, address)
 	res, err := types.ModuleCdc.MarshalJSON(resolvers)
 	if err != nil {
-		return nil, types.ErrorMarshal()
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 	return res, nil
 }
 
 func queryNodesOfResolver(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
 	var params types.QueryNodesOfResolverPrams
-
+	
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
-		return nil, types.ErrorUnmarshal()
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
-
+	
 	nodes := k.GetNodesOfResolver(ctx, params.ID)
-
+	
 	res, err := types.ModuleCdc.MarshalJSON(nodes)
 	if err != nil {
-		return nil, types.ErrorMarshal()
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
-
+	
 	return res, nil
 }
 
 func queryResolversOfNode(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
 	var params types.QueryResolversOfNodeParams
-
+	
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
-		return nil, types.ErrorUnmarshal()
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
-
+	
 	resolvers := k.GetResolversOfNode(ctx, params.ID)
-
+	
 	res, err := types.ModuleCdc.MarshalJSON(resolvers)
 	if err != nil {
-		return nil, types.ErrorMarshal()
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
-
+	
 	return res, nil
 }
