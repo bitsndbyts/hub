@@ -41,6 +41,7 @@ var (
 	SessionsCountOfSubscriptionKeyPrefix = []byte{0x02}
 	SessionIDBySubscriptionIDKeyPrefix   = []byte{0x03}
 	FreeSessionIDByClientIDKeyPrefix     = []byte{0x04}
+	FreeSessionBandwidthKey 	     = []byte{0x05}
 
 	ResolverCountKey                = []byte{0x00}
 	ResolverCountOfAddressKeyPrefix = []byte{0x01}
@@ -53,7 +54,6 @@ var (
 	FreeNodesOfClientKeyPrefix = []byte{0x01}
 	FreeClientOfNodeKeyPrefix  = []byte{0x02}
 
-	FreeSessionBandwidthKey = []byte{0x04}
 )
 
 func NodeKey(id hub.NodeID) []byte {

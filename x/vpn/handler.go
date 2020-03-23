@@ -579,7 +579,6 @@ func handleEndFreeSessionBandwidth(ctx sdk.Context, k keeper.Keeper, msg types.M
 	session.Status = StatusInactive
 	session.StatusModifiedAt = ctx.BlockHeight()
 
-	fmt.Println(session, count)
 	k.SetFreeSessionBandwidth(ctx, session, count)
 
 	k.SetFreeSessionsCountOfClient(ctx, msg.ClientID, msg.NodeID, count+1)
