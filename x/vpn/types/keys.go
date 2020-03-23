@@ -40,6 +40,7 @@ var (
 	SessionKeyPrefix                     = []byte{0x01}
 	SessionsCountOfSubscriptionKeyPrefix = []byte{0x02}
 	SessionIDBySubscriptionIDKeyPrefix   = []byte{0x03}
+	FreeSessionIDByClientIDKeyPrefix     = []byte{0x04}
 
 	ResolverCountKey                = []byte{0x00}
 	ResolverCountOfAddressKeyPrefix = []byte{0x01}
@@ -52,7 +53,7 @@ var (
 	FreeNodesOfClientKeyPrefix = []byte{0x01}
 	FreeClientOfNodeKeyPrefix  = []byte{0x02}
 
-	FreeSessionBandwidthKey    = []byte{0x04}
+	FreeSessionBandwidthKey = []byte{0x04}
 )
 
 func NodeKey(id hub.NodeID) []byte {
@@ -96,6 +97,10 @@ func SessionKey(id hub.SessionID) []byte {
 
 func SessionsCountOfSubscriptionKey(id hub.SubscriptionID) []byte {
 	return append(SessionsCountOfSubscriptionKeyPrefix, id.Bytes()...)
+}
+
+func FreeSessionsCountOfClientKey(clientID string, nodeID hub.NodeID) []byte {
+	return append(FreeSessionIDByClientIDKeyPrefix, append([]byte(clientID), nodeID.Bytes()...)...)
 }
 
 func SessionIDBySubscriptionIDKey(id hub.SubscriptionID, i uint64) []byte {
@@ -145,10 +150,6 @@ func GetFreeClientKey(nodeID hub.NodeID) []byte {
 	return append(FreeClientKey, nodeID.Bytes()...)
 }
 
-func GetFreeSessionClientKey(client []byte) []byte {
-	return append(FreeSessionBandwidthKey, client...)
-}
-
-func GetFreeSessionBandwidthKey(client, nodeAddress []byte) []byte {
-	return append(GetFreeSessionClientKey(client), nodeAddress...)
+func GetFreeSessionBandwidthKey(client, nodeAddress, count []byte) []byte {
+	return append(FreeSessionBandwidthKey,append(client, append(nodeAddress, count...)...)...)
 }

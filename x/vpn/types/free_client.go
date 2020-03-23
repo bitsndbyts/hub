@@ -16,6 +16,6 @@ type FreeClient struct {
 func (fc FreeClient) String() string {
 	return fmt.Sprintf(`
 	NodeID : %s
-	Client : %s
+	NodeAddress : %s
 `, fc.NodeID.String(), fc.Client.String())
 }

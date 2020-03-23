@@ -38,7 +38,7 @@ func AddFreeClientTxCmd(cdc *codec.Codec) *cobra.Command {
 	}
 	
 	cmd.Flags().String(flagNodeID, "", "VPN node id")
-	cmd.Flags().String(flagAddress, "", "Client address")
+	cmd.Flags().String(flagAddress, "", "NodeAddress address")
 	
 	_ = cmd.MarkFlagRequired(flagNodeID)
 	_ = cmd.MarkFlagRequired(flagAddress)

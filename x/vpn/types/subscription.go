@@ -34,7 +34,7 @@ func (s Subscription) String() string {
   ID:                  %s
   ResolverID            %s
   Node ID:             %s
-  Client Address:      %s
+  NodeAddress Address:      %s
   Price Per GB:        %s
   Total Deposit:       %s
   Total Bandwidth:     %s

@@ -2,6 +2,7 @@ package vpn
 
 import (
 	"bytes"
+	"fmt"
 	"reflect"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -46,6 +47,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return handleDeregisterResolver(ctx, k, msg)
 		case types.MsgUpdateFreeSessionBandwidth:
 			return handleUpdateFreeSessionBandwidth(ctx, k, msg)
+		case types.MsgEndFreeSessionBandwidth:
+			return handleEndFreeSessionBandwidth(ctx, k, msg)
 
 		default:
 			return types.ErrorUnknownMsgType(reflect.TypeOf(msg).Name()).Result()
@@ -535,14 +538,18 @@ func handleUpdateFreeSessionBandwidth(ctx sdk.Context, k keeper.Keeper, msg type
 		return types.ErrorUnauthorized().Result()
 	}
 
-	session := types.FreeSessionBandwidth{
-		NodeAddress: msg.From,
-		NodeID:      msg.NodeID,
-		ClientID:    msg.ClientID,
-		Bandwidth:   msg.BandWidth,
+	session := types.FreeSession{
+		NodeID:           msg.NodeID,
+		NodeAddress:      node.Owner,
+		ClientID:         msg.ClientID,
+		Bandwidth:        msg.BandWidth,
+		Status:           StatusActive,
+		StatusModifiedAt: ctx.BlockHeight(),
 	}
 
-	k.SetFreeSessionBandwidth(ctx, session)
+	count := k.GetFreeSessionsCountOfClient(ctx, session.ClientID, session.NodeID)
+
+	k.SetFreeSessionBandwidth(ctx, session, count)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -552,6 +559,40 @@ func handleUpdateFreeSessionBandwidth(ctx sdk.Context, k keeper.Keeper, msg type
 			sdk.NewAttribute(AttributeKeyFromAddress, msg.From.String()),
 		),
 	)
+
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func handleEndFreeSessionBandwidth(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndFreeSessionBandwidth) sdk.Result {
+	node, _ := k.GetNode(ctx, msg.NodeID)
+	if !node.Owner.Equals(msg.From) {
+		return types.ErrorUnauthorized().Result()
+	}
+
+	count := k.GetFreeSessionsCountOfClient(ctx, msg.ClientID, msg.NodeID)
+
+	session, found := k.GetFreeSessionBandwidth(ctx, msg.ClientID, msg.NodeID, count)
+	if !found {
+		return types.ErrorInvalidSessionStatus().Result()
+	}
+
+	session.Status = StatusInactive
+	session.StatusModifiedAt = ctx.BlockHeight()
+
+	fmt.Println(session, count)
+	k.SetFreeSessionBandwidth(ctx, session, count)
+
+	k.SetFreeSessionsCountOfClient(ctx, msg.ClientID, msg.NodeID, count+1)
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			EventTypeMsgUpdateFreeSessionBandwidth,
+			sdk.NewAttribute(AttributeKeyNodeID, msg.NodeID.String()),
+			sdk.NewAttribute(AttrubyteKeyClientID, msg.ClientID),
+			sdk.NewAttribute(AttributeKeyFromAddress, msg.From.String()),
+		),
+	)
+
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 

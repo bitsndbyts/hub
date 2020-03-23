@@ -21,6 +21,7 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgUpdateSessionInfo{}, "x/vpn/MsgUpdateSessionInfo", nil)
 	cdc.RegisterConcrete(MsgEndSession{}, "x/vpn/MsgEndSession", nil)
 	cdc.RegisterConcrete(MsgUpdateFreeSessionBandwidth{}, "x/vpn/MsgUpdateFreeSessionBandwidth", nil)
+	cdc.RegisterConcrete(MsgEndFreeSessionBandwidth{}, "x/vpn/MsgEndFreeSessionBandwidth", nil)
 	cdc.RegisterConcrete(MsgRegisterResolver{}, "x/vpn/MsgRegisterResolver", nil)
 	cdc.RegisterConcrete(MsgUpdateResolverInfo{}, "x/vpn/MsgUpdateResolverInfo", nil)
 	cdc.RegisterConcrete(MsgDeregisterResolver{}, "x/vpn/MsgDeregisterResolver", nil)

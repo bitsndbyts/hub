@@ -174,15 +174,39 @@ func (k Keeper) RemoveSessionIDFromActiveList(ctx sdk.Context, height int64, id 
 	k.SetActiveSessionIDs(ctx, height, ids)
 }
 
-func (k Keeper) SetFreeSessionBandwidth(ctx sdk.Context, session types.FreeSessionBandwidth) {
+func (k Keeper) SetFreeSessionsCountOfClient(ctx sdk.Context, clientID string, nodeID hub.NodeID, count uint64) {
+	key := types.FreeSessionsCountOfClientKey(clientID, nodeID)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
+
 	store := ctx.KVStore(k.sessionKey)
-	store.Set(types.GetFreeSessionBandwidthKey([]byte(session.ClientID), session.NodeAddress),
+	store.Set(key, value)
+}
+
+func (k Keeper) GetFreeSessionsCountOfClient(ctx sdk.Context, clientID string, nodeID hub.NodeID) (count uint64) {
+	store := ctx.KVStore(k.sessionKey)
+
+	key := types.FreeSessionsCountOfClientKey(clientID, nodeID)
+	value := store.Get(key)
+	if value == nil {
+		return 0
+	}
+
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &count)
+
+	return count
+}
+
+func (k Keeper) SetFreeSessionBandwidth(ctx sdk.Context, session types.FreeSession, count uint64) {
+	store := ctx.KVStore(k.sessionKey)
+
+	store.Set(types.GetFreeSessionBandwidthKey([]byte(session.ClientID), session.NodeID, k.cdc.MustMarshalBinaryLengthPrefixed(count)),
 		k.cdc.MustMarshalBinaryLengthPrefixed(session))
 }
 
-func (k Keeper) GetFreeSessionBandwidth(ctx sdk.Context, client string, nodeAddress sdk.AccAddress) (session types.FreeSessionBandwidth, found bool) {
+func (k Keeper) GetFreeSessionBandwidth(ctx sdk.Context, client string, nodeID hub.NodeID, count uint64) (session types.FreeSession, found bool) {
 	store := ctx.KVStore(k.sessionKey)
-	key := types.GetFreeSessionBandwidthKey([]byte(client), nodeAddress.Bytes())
+
+	key := types.GetFreeSessionBandwidthKey([]byte(client), nodeID.Bytes(), k.cdc.MustMarshalBinaryLengthPrefixed(count))
 	bz := store.Get(key)
 	if bz == nil {
 		return session, false
@@ -192,14 +216,14 @@ func (k Keeper) GetFreeSessionBandwidth(ctx sdk.Context, client string, nodeAddr
 	return session, true
 }
 
-func (k Keeper) GetFreeSessionsByClientID(ctx sdk.Context, client string) (sessions []types.FreeSessionBandwidth) {
+func (k Keeper) GetFreeSessionsByClientID(ctx sdk.Context, client string) (sessions []types.FreeSession) {
 	store := ctx.KVStore(k.sessionKey)
 
-	iter := sdk.KVStorePrefixIterator(store, types.GetFreeSessionClientKey([]byte(client)))
+	iter := sdk.KVStorePrefixIterator(store, types.GetFreeSessionBandwidthKey([]byte(client), nil, nil))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
-		var session types.FreeSessionBandwidth
+		var session types.FreeSession
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &session)
 		sessions = append(sessions, session)
 	}
@@ -207,14 +231,14 @@ func (k Keeper) GetFreeSessionsByClientID(ctx sdk.Context, client string) (sessi
 	return sessions
 }
 
-func (k Keeper) GetFreeSessions(ctx sdk.Context) (sessions []types.FreeSessionBandwidth) {
+func (k Keeper) GetFreeSessions(ctx sdk.Context) (sessions []types.FreeSession) {
 	store := ctx.KVStore(k.sessionKey)
 
 	iter := sdk.KVStorePrefixIterator(store, types.FreeSessionBandwidthKey)
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
-		var session types.FreeSessionBandwidth
+		var session types.FreeSession
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &session)
 		sessions = append(sessions, session)
 	}
@@ -222,7 +246,7 @@ func (k Keeper) GetFreeSessions(ctx sdk.Context) (sessions []types.FreeSessionBa
 	return sessions
 }
 
-func (k Keeper) GetFreeSessionsByNodeAddress(ctx sdk.Context, address sdk.AccAddress) (sessions []types.FreeSessionBandwidth) {
+func (k Keeper) GetFreeSessionsByNodeAddress(ctx sdk.Context, address sdk.AccAddress) (sessions []types.FreeSession) {
 	freeSessions := k.GetFreeSessions(ctx)
 
 	for _, session := range freeSessions {
