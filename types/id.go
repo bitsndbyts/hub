@@ -54,7 +54,7 @@ func NewNodeIDFromString(s string) (NodeID, error) {
 }
 
 func (id NodeID) String() string {
-	return fmt.Sprintf("%s%d", NodeIDPrefix, id.Uint64())
+	return fmt.Sprintf("%s%x", NodeIDPrefix, id.Uint64())
 }
 
 func (id NodeID) Uint64() uint64 {
@@ -113,7 +113,7 @@ func NewSessionIDFromString(s string) (SessionID, error) {
 }
 
 func (id SessionID) String() string {
-	return fmt.Sprintf("%s%d", SessionIDPrefix, id.Uint64())
+	return fmt.Sprintf("%s%x", SessionIDPrefix, id.Uint64())
 }
 
 func (id SessionID) Uint64() uint64 {
@@ -172,7 +172,7 @@ func NewSubscriptionIDFromString(s string) (SubscriptionID, error) {
 }
 
 func (id SubscriptionID) String() string {
-	return fmt.Sprintf("%s%d", SubscriptionIDPrefix, id.Uint64())
+	return fmt.Sprintf("%s%x", SubscriptionIDPrefix, id.Uint64())
 }
 
 func (id SubscriptionID) Uint64() uint64 {
@@ -231,7 +231,7 @@ func NewResolverIDFromString(s string) (ResolverID, error) {
 }
 
 func (id ResolverID) String() string {
-	return fmt.Sprintf("%s%d", ResolverIDPrefix, id.Uint64())
+	return fmt.Sprintf("%s%x", ResolverIDPrefix, id.Uint64())
 }
 
 func (id ResolverID) Uint64() uint64 {
