@@ -2,9 +2,9 @@ package vpn
 
 import (
 	"bytes"
-	"reflect"
 	
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	
 	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/vpn/keeper"
@@ -46,7 +46,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return handleDeregisterResolver(ctx, k, msg)
 		
 		default:
-			return nil, types.ErrorUnknownMsgType(reflect.TypeOf(msg).Name())
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", ModuleName, msg)
 		}
 	}
 }
@@ -97,7 +97,6 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) {
 				}
 			}
 		}
-		
 		session.Status = types.StatusInactive
 		session.StatusModifiedAt = height
 		k.SetSession(ctx, session)
@@ -114,6 +113,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) {
 }
 
 func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterNode) (*sdk.Result, error) {
+	
 	nc := k.GetNodesCount(ctx)
 	node := types.Node{
 		ID:               hub.NewNodeID(nc),
@@ -250,7 +250,7 @@ func handleRemoveFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemov
 			sdk.NewAttribute(AttributeKeyNodeID, msg.NodeID.String()),
 			sdk.NewAttribute(AttributeKeyClientAddress, msg.Client.String()),
 			sdk.NewAttribute(AttributeKeyFromAddress, msg.From.String()),
-		), )
+		))
 	
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
@@ -350,7 +350,7 @@ func handleDeregisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregis
 			sdk.NewAttribute(AttributeKeyFromAddress, msg.From.String()),
 			sdk.NewAttribute(AttributeKeyStatus, node.Status),
 			sdk.NewAttribute(AttributeKeyNodeID, msg.ID.String()),
-		), )
+		))
 	
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 	
@@ -397,6 +397,7 @@ func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 		Status:             types.StatusActive,
 		StatusModifiedAt:   ctx.BlockHeight(),
 	}
+	
 	k.SetSubscription(ctx, subscription)
 	k.SetSubscriptionsCount(ctx, sc+1)
 	
@@ -451,7 +452,6 @@ func handleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSub
 	
 	subscription.Status = types.StatusInactive
 	subscription.StatusModifiedAt = ctx.BlockHeight()
-	
 	k.SetSubscription(ctx, subscription)
 	
 	ctx.EventManager().EmitEvent(
@@ -517,7 +517,6 @@ func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpda
 	session.StatusModifiedAt = ctx.BlockHeight()
 	
 	k.SetSession(ctx, session)
-	
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			EventTypeMsgUpdateSessionInfo,

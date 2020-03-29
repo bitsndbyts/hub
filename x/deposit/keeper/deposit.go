@@ -11,6 +11,7 @@ func (k Keeper) SetDeposit(ctx sdk.Context, deposit types.Deposit) {
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(deposit)
 	
 	store := ctx.KVStore(k.key)
+	
 	store.Set(key, value)
 }
 
@@ -46,7 +47,6 @@ func (k Keeper) Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) (e
 	if err := k.supply.SendCoinsFromAccountToModule(ctx, address, types.ModuleName, coins); err != nil {
 		return err
 	}
-	
 	deposit, found := k.GetDeposit(ctx, address)
 	if !found {
 		deposit = types.Deposit{
@@ -59,7 +59,6 @@ func (k Keeper) Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) (e
 	if deposit.Coins.IsAnyNegative() {
 		return types.ErrorInsufficientDepositFunds(deposit.Coins, coins)
 	}
-	
 	k.SetDeposit(ctx, deposit)
 	return nil
 }
@@ -88,7 +87,6 @@ func (k Keeper) SendFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddres
 	if !found {
 		return types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
 	}
-	
 	deposit.Coins, _ = deposit.Coins.SafeSub(coins)
 	if deposit.Coins.IsAnyNegative() {
 		return types.ErrorInsufficientDepositFunds(coins, deposit.Coins)

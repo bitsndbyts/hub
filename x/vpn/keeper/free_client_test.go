@@ -57,7 +57,7 @@ func TestKeeper_FreeClients(t *testing.T) {
 	k.SetFreeClient(ctx, types.FreeClient{
 		NodeID: hub.NewNodeID(0),
 		Client: types.TestAddress3,
-	}, )
+	})
 	
 	freeclients = k.GetFreeClientsOfNode(ctx, hub.NewNodeID(1))
 	require.Equal(t, 0, len(freeclients))

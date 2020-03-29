@@ -3,13 +3,13 @@ package types
 import (
 	"encoding/json"
 	"testing"
-	
+
 	"github.com/pkg/errors"
-	
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/stretchr/testify/require"
-	
+
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -53,7 +53,7 @@ func TestMsgUpdateSessionInfo_ValidateBasic(t *testing.T) {
 			nil,
 		},
 	}
-	
+
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
@@ -69,7 +69,7 @@ func TestMsgUpdateSessionInfo_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -100,7 +100,7 @@ func TestMsgEndSession_ValidateBasic(t *testing.T) {
 			ErrInvalidField,
 		}, {
 			"from is empty",
-			NewMsgEndSession([]byte(""), hub.NewSubscriptionID(1), ),
+			NewMsgEndSession([]byte(""), hub.NewSubscriptionID(1)),
 			ErrInvalidField,
 		}, {
 			"subscription_id nil",
@@ -112,7 +112,7 @@ func TestMsgEndSession_ValidateBasic(t *testing.T) {
 			nil,
 		},
 	}
-	
+
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
@@ -128,7 +128,7 @@ func TestMsgEndSession_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -138,7 +138,7 @@ func TestMsgEndSession_GetSigners(t *testing.T) {
 }
 
 func TestMsgEndSession_Type(t *testing.T) {
-	msg := NewMsgEndSession(TestAddress1, hub.NewSubscriptionID(1), )
+	msg := NewMsgEndSession(TestAddress1, hub.NewSubscriptionID(1))
 	require.Equal(t, "end_session", msg.Type())
 }
 

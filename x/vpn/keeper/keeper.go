@@ -19,14 +19,14 @@ type Keeper struct {
 }
 
 func NewKeeper(cdc *codec.Codec, nodeKey, subscriptionKey, sessionKey, resolverKey sdk.StoreKey,
-	paramStore params.Subspace, dk deposit.Keeper) Keeper {
+	paramSpace params.Subspace, dk deposit.Keeper) Keeper {
 	return Keeper{
 		nodeKey:         nodeKey,
 		subscriptionKey: subscriptionKey,
 		sessionKey:      sessionKey,
 		resolverKey:     resolverKey,
 		cdc:             cdc,
-		paramStore:      paramStore.WithKeyTable(ParamKeyTable()),
+		paramStore:      paramSpace.WithKeyTable(ParamKeyTable()),
 		deposit:         dk,
 	}
 }

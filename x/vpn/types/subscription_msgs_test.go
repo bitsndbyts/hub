@@ -3,12 +3,12 @@ package types
 import (
 	"encoding/json"
 	"testing"
-	
+
 	"github.com/pkg/errors"
-	
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	
+
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -56,7 +56,7 @@ func TestMsgStartSubscription_ValidateBasic(t *testing.T) {
 			nil,
 		},
 	}
-	
+
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
@@ -72,7 +72,7 @@ func TestMsgStartSubscription_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -111,7 +111,7 @@ func TestMsgEndSubscription_ValidateBasic(t *testing.T) {
 			nil,
 		},
 	}
-	
+
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := errors.Cause(tc.msg.ValidateBasic()); got != tc.want {
@@ -127,7 +127,7 @@ func TestMsgEndSubscription_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 

@@ -29,6 +29,10 @@ var (
 	NodesCountOfAddressKeyPrefix = []byte{0x02}
 	NodeIDByAddressKeyPrefix     = []byte{0x03}
 	
+	FreeClientKey              = []byte{0x05}
+	FreeNodesOfClientKeyPrefix = []byte{0x06}
+	FreeClientOfNodeKeyPrefix  = []byte{0x07}
+	
 	SubscriptionsCountKey                = []byte{0x00}
 	SubscriptionKeyPrefix                = []byte{0x01}
 	SubscriptionsCountOfNodeKeyPrefix    = []byte{0x02}
@@ -47,10 +51,6 @@ var (
 	ResolverIDByAddressPrefix       = []byte{0x03}
 	NodesOfResolverKeyPrefix        = []byte{0x04}
 	ResolversOfNodeKeyPrefix        = []byte{0x05}
-	
-	FreeClientKey              = []byte{0x00}
-	FreeNodesOfClientKeyPrefix = []byte{0x01}
-	FreeClientOfNodeKeyPrefix  = []byte{0x02}
 )
 
 func NodeKey(id hub.NodeID) []byte {

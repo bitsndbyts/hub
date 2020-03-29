@@ -124,6 +124,7 @@ func Test_handleRegisterNode(t *testing.T) {
 	node, found = k.GetNode(ctx, id)
 	require.Equal(t, true, found)
 	require.Equal(t, id, node.ID)
+	
 }
 
 func Test_handleUpdateNodeInfo(t *testing.T) {
@@ -800,7 +801,7 @@ func Test_HandleRegisterResolver(t *testing.T) {
 	require.NotNil(t, found)
 	require.Equal(t, uint64(0), k.GetResolverCount(ctx))
 	
-	msg := NewMsgRegisterResolver(resolver.Owner, resolver.Commission)
+	msg := *NewMsgRegisterResolver(resolver.Owner, resolver.Commission)
 	res, err := handler(ctx, msg)
 	require.NoError(t, err)
 	require.NotNil(t, res)
@@ -811,7 +812,7 @@ func Test_HandleRegisterResolver(t *testing.T) {
 	require.Equal(t, uint64(1), k.GetResolverCount(ctx))
 	require.Equal(t, uint64(1), k.GetResolversCountOfAddress(ctx, resolver.Owner))
 	
-	msg = NewMsgRegisterResolver(resolver.Owner, resolver.Commission)
+	msg = *NewMsgRegisterResolver(resolver.Owner, resolver.Commission)
 	res, err = handler(ctx, msg)
 	require.NoError(t, err)
 	require.NotNil(t, res)
@@ -823,7 +824,7 @@ func Test_HandleRegisterResolver(t *testing.T) {
 	require.Equal(t, 2, len(k.GetResolversOfAddress(ctx, resolver.Owner)))
 	
 	resolver.Owner = types.TestAddress1
-	msg = NewMsgRegisterResolver(resolver.Owner, resolver.Commission)
+	msg = *NewMsgRegisterResolver(resolver.Owner, resolver.Commission)
 	res, err = handler(ctx, msg)
 	require.NoError(t, err)
 	require.NotNil(t, res)
@@ -834,12 +835,12 @@ func Test_HandleRegisterResolver(t *testing.T) {
 	require.Equal(t, uint64(1), k.GetResolversCountOfAddress(ctx, types.TestAddress1))
 	require.Equal(t, 1, len(k.GetResolversOfAddress(ctx, types.TestAddress1)))
 	
-	updateResolverInfoMsg := NewMsgUpdateResolverInfo(types.TestAddress2, hub.NewResolverID(4), sdk.NewDecWithPrec(2, 1))
+	updateResolverInfoMsg := *NewMsgUpdateResolverInfo(types.TestAddress2, hub.NewResolverID(4), sdk.NewDecWithPrec(2, 1))
 	res, err = handler(ctx, updateResolverInfoMsg)
 	require.NotNil(t, err)
 	require.Equal(t, types.ErrorResolverDoesNotExist(), err)
 	
-	updateResolverInfoMsg = NewMsgUpdateResolverInfo(types.TestAddress2, hub.NewResolverID(2), sdk.NewDecWithPrec(2, 1))
+	updateResolverInfoMsg = *NewMsgUpdateResolverInfo(types.TestAddress2, hub.NewResolverID(2), sdk.NewDecWithPrec(2, 1))
 	res, err = handler(ctx, updateResolverInfoMsg)
 	require.NotNil(t, err)
 	require.Equal(t, types.ErrorUnauthorized(), err)
@@ -848,14 +849,14 @@ func Test_HandleRegisterResolver(t *testing.T) {
 	resolver.Status = StatusDeRegistered
 	k.SetResolver(ctx, resolver)
 	
-	updateResolverInfoMsg = NewMsgUpdateResolverInfo(types.TestAddress1, hub.NewResolverID(2), sdk.NewDecWithPrec(2, 1))
+	updateResolverInfoMsg = *NewMsgUpdateResolverInfo(types.TestAddress1, hub.NewResolverID(2), sdk.NewDecWithPrec(2, 1))
 	res, err = handler(ctx, updateResolverInfoMsg)
 	require.NotNil(t, err)
 	require.Equal(t, types.ErrorInvalidResolverStatus(), err)
 	
 	resolver.Status = StatusRegistered
 	k.SetResolver(ctx, resolver)
-	updateResolverInfoMsg = NewMsgUpdateResolverInfo(types.TestAddress1, hub.NewResolverID(2), sdk.NewDecWithPrec(2, 1))
+	updateResolverInfoMsg = *NewMsgUpdateResolverInfo(types.TestAddress1, hub.NewResolverID(2), sdk.NewDecWithPrec(2, 1))
 	res, err = handler(ctx, updateResolverInfoMsg)
 	require.NoError(t, err)
 	require.NotNil(t, res)
@@ -870,26 +871,26 @@ func Test_HandleRegisterResolver(t *testing.T) {
 	require.True(t, found)
 	require.Equal(t, sdk.NewDecWithPrec(2, 1), resolver.Commission)
 	
-	deRegisterResolverMsg := NewMsgDeregisterResolver(types.TestAddress2, hub.NewResolverID(k.GetResolverCount(ctx)+1))
+	deRegisterResolverMsg := *NewMsgDeregisterResolver(types.TestAddress2, hub.NewResolverID(k.GetResolverCount(ctx)+1))
 	res, err = handler(ctx, deRegisterResolverMsg)
 	require.NotNil(t, err)
 	require.Equal(t, types.ErrorResolverDoesNotExist(), err)
 	
-	deRegisterResolverMsg = NewMsgDeregisterResolver(types.TestAddress2, hub.NewResolverID(2))
+	deRegisterResolverMsg = *NewMsgDeregisterResolver(types.TestAddress2, hub.NewResolverID(2))
 	res, err = handler(ctx, deRegisterResolverMsg)
 	require.NotNil(t, err)
 	require.Equal(t, types.ErrorUnauthorized(), err)
 	
 	resolver.Status = StatusDeRegistered
 	k.SetResolver(ctx, resolver)
-	deRegisterResolverMsg = NewMsgDeregisterResolver(types.TestAddress1, hub.NewResolverID(2))
+	deRegisterResolverMsg = *NewMsgDeregisterResolver(types.TestAddress1, hub.NewResolverID(2))
 	res, err = handler(ctx, deRegisterResolverMsg)
 	require.NotNil(t, err)
 	
 	resolver.Status = StatusRegistered
 	k.SetResolver(ctx, resolver)
 	
-	deRegisterResolverMsg = NewMsgDeregisterResolver(types.TestAddress1, hub.NewResolverID(2))
+	deRegisterResolverMsg = *NewMsgDeregisterResolver(types.TestAddress1, hub.NewResolverID(2))
 	res, err = handler(ctx, deRegisterResolverMsg)
 	require.NoError(t, err)
 	require.NotNil(t, res)

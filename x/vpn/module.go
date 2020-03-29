@@ -2,7 +2,9 @@ package vpn
 
 import (
 	"encoding/json"
+	"math/rand"
 	
+	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 	
@@ -15,14 +17,19 @@ import (
 	
 	"github.com/sentinel-official/hub/x/vpn/client/cli"
 	"github.com/sentinel-official/hub/x/vpn/client/rest"
+	vpnsimulation "github.com/sentinel-official/hub/x/vpn/simulation"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 var (
-	_ module.AppModuleBasic = AppModuleBasic{}
-	_ module.AppModule      = AppModule{}
+	_ module.AppModuleBasic      = AppModuleBasic{}
+	_ module.AppModule           = AppModule{}
+	_ module.AppModuleSimulation = AppModule{}
 )
 
 type AppModuleBasic struct{}
+
+var _ module.AppModuleBasic = AppModuleBasic{}
 
 func (a AppModuleBasic) Name() string {
 	return ModuleName
@@ -59,15 +66,20 @@ func (a AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
-	keeper Keeper
+	keeper        Keeper
+	accountKeeper types.AccountKeeper
 }
 
-func NewAppModule(k Keeper) AppModule {
+func NewAppModule(k Keeper, accountKeeper types.AccountKeeper) AppModule {
 	return AppModule{
-		keeper: k,
+		keeper:        k,
+		accountKeeper: accountKeeper,
 	}
 }
 
+func (AppModule) Name() string {
+	return ModuleName
+}
 func (a AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
 	var state GenesisState
 	ModuleCdc.MustUnmarshalJSON(data, &state)
@@ -104,4 +116,26 @@ func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
 func (a AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
 	EndBlock(ctx, a.keeper)
 	return nil
+}
+
+// -----------------------
+
+func (a AppModule) GenerateGenesisState(_ *module.SimulationState) {}
+
+func (a AppModule) ProposalContents(_ module.SimulationState) []simulation.WeightedProposalContent {
+	return nil
+}
+
+func (a AppModule) RandomizedParams(r *rand.Rand) []simulation.ParamChange {
+	return nil
+}
+
+func (a AppModule) RegisterStoreDecoder(sdk.StoreDecoderRegistry) {
+
+}
+
+func (a AppModule) WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation {
+	return vpnsimulation.WeightedOperations(
+		simState.AppParams, simState.Cdc, a.accountKeeper, a.keeper,
+	)
 }

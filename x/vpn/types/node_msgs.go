@@ -37,6 +37,7 @@ func (msg MsgRegisterNode) ValidateBasic() error {
 	if len(msg.Moniker) > 128 {
 		return ErrorInvalidField("moniker")
 	}
+	
 	if msg.PricesPerGB == nil ||
 		msg.PricesPerGB.Len() == 0 || !msg.PricesPerGB.IsValid() {
 		return ErrorInvalidField("prices_per_gb")

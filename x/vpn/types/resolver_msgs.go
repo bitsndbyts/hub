@@ -43,8 +43,8 @@ func (msg MsgRegisterResolver) GetSignBytes() []byte {
 func (msg MsgRegisterResolver) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.From}
 }
-func NewMsgRegisterResolver(from sdk.AccAddress, commission sdk.Dec) MsgRegisterResolver {
-	return MsgRegisterResolver{
+func NewMsgRegisterResolver(from sdk.AccAddress, commission sdk.Dec) *MsgRegisterResolver {
+	return &MsgRegisterResolver{
 		From:       from,
 		Commission: commission,
 	}
@@ -91,8 +91,8 @@ func (msg MsgUpdateResolverInfo) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.From}
 }
 
-func NewMsgUpdateResolverInfo(from sdk.AccAddress, id hub.ResolverID, commission sdk.Dec) MsgUpdateResolverInfo {
-	return MsgUpdateResolverInfo{
+func NewMsgUpdateResolverInfo(from sdk.AccAddress, id hub.ResolverID, commission sdk.Dec) *MsgUpdateResolverInfo {
+	return &MsgUpdateResolverInfo{
 		From:       from,
 		ResolverID: id,
 		Commission: commission,
@@ -135,8 +135,8 @@ func (msg MsgDeregisterResolver) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.From}
 }
 
-func NewMsgDeregisterResolver(from sdk.AccAddress, id hub.ResolverID) MsgDeregisterResolver {
-	return MsgDeregisterResolver{
+func NewMsgDeregisterResolver(from sdk.AccAddress, id hub.ResolverID) *MsgDeregisterResolver {
+	return &MsgDeregisterResolver{
 		From:       from,
 		ResolverID: id,
 	}

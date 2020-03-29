@@ -14,3 +14,5 @@ require (
 	github.com/tendermint/tm-db v0.5.0
 	gopkg.in/yaml.v2 v2.2.8
 )
+
+// replace github.com/cosmos/cosmos-sdk => ../../cosmos/cosmos-sdk
