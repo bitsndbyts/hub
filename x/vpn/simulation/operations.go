@@ -189,6 +189,10 @@ func WeightedOperations(
 			weightMsgUpdateSessionInfo,
 			SimulateMsgUpdateSessionInfo(ak, k),
 		),
+		simulation.NewWeightedOperation(
+			weightMsgEndSession,
+			SimulateMsgEndSession(ak, k),
+		),
 	}
 }
 
@@ -218,7 +222,13 @@ func SimulateMsgRegisterNode(ak types.AccountKeeper, k keeper.Keeper) simulation
 			return simulation.NoOpMsg(types.ModuleName), nil, err
 		}
 		
+		spendableCoins := acc.SpendableCoins(ctx.BlockTime())
 		coins = getRandomCoins(r)
+		
+		_, hasNeg := spendableCoins.SafeSub(coins)
+		if hasNeg {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
 		msg := *types.NewMsgRegisterNode(acc.GetAddress(),
 			getRandomType(r), getRandomVersion(r), getRandomMoniker(r),
 			coins, getRandomBandwidth(r), getRandomEncryption(r),
@@ -859,6 +869,11 @@ func SimulateMsgStartSubscription(ak types.AccountKeeper, k keeper.Keeper) simul
 			}
 		}
 		
+		spenableCoins := acc.SpendableCoins(ctx.BlockTime())
+		_, hasNeg = spenableCoins.SafeSub(sdk.Coins{depositCoin})
+		if hasNeg {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
 		msg := *types.NewMsgStartSubscription(acc.GetAddress(), resolver.ID, node.ID, depositCoin)
 		if err := msg.ValidateBasic(); err != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("msg validation %v failed", err)
@@ -1017,6 +1032,72 @@ func SimulateMsgUpdateSessionInfo(ak types.AccountKeeper, k keeper.Keeper) simul
 		
 		msg := *types.NewMsgUpdateSessionInfo(acc.GetAddress(), subscription.ID, bandwidth,
 			nodeOwnerStdSig, clienStdSig)
+		if err := msg.ValidateBasic(); err != nil {
+			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("msg validation %v failed", err)
+		}
+		
+		tx := helpers.GenTx(
+			[]sdk.Msg{msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{acc.GetAccountNumber()},
+			[]uint64{acc.GetSequence()},
+			simAccount.PrivKey,
+		)
+		_, _, err = app.Deliver(tx)
+		if err != nil {
+			return simulation.NoOpMsg(types.ModuleName), nil, err
+		}
+		
+		return simulation.NewOperationMsg(msg, true, "executed"), nil, nil
+	}
+}
+
+func SimulateMsgEndSession(ak types.AccountKeeper, k keeper.Keeper) simulation.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simulation.Account, chainID string,
+	) (simulation.OperationMsg, []simulation.FutureOperation, error) {
+		simAccount, _ := simulation.RandomAcc(r, accs)
+		acc := ak.GetAccount(ctx, simAccount.Address)
+		if acc == nil {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+		
+		if err := acc.SetPubKey(simAccount.PubKey); err != nil {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+		ak.SetAccount(ctx, acc)
+		
+		coins := acc.SpendableCoins(ctx.BlockTime())
+		var (
+			fees sdk.Coins
+			err  error
+		)
+		fees, err = simulation.RandomFees(r, ctx, coins)
+		if err != nil {
+			return simulation.NoOpMsg(types.ModuleName), nil, err
+		}
+		
+		subscription := keeper.RandomSubscription(r, ctx, k, )
+		if reflect.DeepEqual(subscription, types.Subscription{}) {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+		
+		node, _ := k.GetNode(ctx, subscription.NodeID)
+		if !node.Owner.Equals(acc.GetAddress()) {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+		
+		if reflect.DeepEqual(node, types.Node{}) {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+		
+		if subscription.Status != types.StatusActive {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+		
+		msg := *types.NewMsgEndSession(acc.GetAddress(), subscription.ID)
 		if err := msg.ValidateBasic(); err != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("msg validation %v failed", err)
 		}
