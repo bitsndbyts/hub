@@ -153,10 +153,12 @@ var (
 	EventTypeMsgStartSubscription       = types.EventTypeMsgStartSubscription
 	EventTypeMsgEndSubscription         = types.EventTypeMsgEndSubscription
 	EventTypeMsgUpdateSessionInfo       = types.EventTypeMsgUpdateSessionInfo
+	EventTypeMsgUpdateFreeSessionBandwidth = types.EventTypeMsgUpdateFreeSessionBandwidth
 
 	AttributeKeyClientAddress = types.AttributeKeyClientAddress
 	AttributeKeyFromAddress   = types.AttributeKeyFromAddress
 	AttributeKeyNodeID        = types.AttributeKeyNodeID
+	AttrubyteKeyClientID = types.AttrubyteKeyClientID
 	AttributeKeyResolverID    = types.AttributeKeyResolverID
 	AttributeSubscriptionID   = types.AttributeSubscriptionID
 	AttributeSessionID        = types.AttributeSessionID

@@ -38,3 +38,33 @@ func EndSessionTxCmd(cdc *codec.Codec) *cobra.Command {
 
 	return cmd
 }
+
+func EndFreeSessionTxCmd(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "end-free-session",
+		Short: "End free session ",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContext().WithCodec(cdc)
+
+			clientID := viper.GetString(flagClientID)
+
+			nodeID, err := hub.NewNodeIDFromString(viper.GetString(flagNodeID))
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgEndFreeSessionBandwidth(ctx.FromAddress, nodeID, clientID)
+
+			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+		},
+	}
+
+	cmd.Flags().String(flagClientID, "", "Client ID")
+	cmd.Flags().String(flagNodeID, "", "Node ID")
+
+	_ = cmd.MarkFlagRequired(flagClientID)
+	_ = cmd.MarkFlagRequired(flagNodeID)
+
+	return cmd
+}
